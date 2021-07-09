@@ -1,0 +1,67 @@
+.cards > section {
+	position: sticky;
+	top: 0;
+	left: 0;
+	overflow: auto;
+	display: flex;
+	flex-direction: column;
+	padding-top: 5px;
+	background-color: lightcoral;
+}
+section > * {
+	flex: 0 0 auto;
+	max-height: calc(100% - 2em - 20px);
+	height: fit-content;
+	margin: 5px;
+	overflow: auto;
+	background-color: rgba(255, 255, 255, .5);
+	border-radius: 10px;
+}
+section > h1 {
+	overflow: hidden;
+	text-align: center;
+}
+.content > * {
+	margin: 0;
+}
+.cards {
+	margin: 0;
+	display: grid;
+	overflow: auto;
+}
+html {
+	height: 100%;
+}
+body {
+	margin: 0;
+	height: 100%;
+	font-size: 1.5em;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+@media (max-aspect-ratio: 1/1)
+{
+	.cards {
+		height: 100%;
+		width: 100%;
+		grid-template-rows: repeat(1000, 100vh);
+	}
+	
+}
+
+@media (aspect-ratio: 1/1)
+{
+	.cards {
+		height: 100%;
+		width: 100%;
+		grid-template-columns: repeat(1000, 100vw);
+	}
+}
+
+@media (min-aspect-ratio: 1/1)
+{
+	.cards {
+		height: 100%;
+		width: 100%;
+		grid-template-columns: repeat(1000, 100vw);
+	}
+}
