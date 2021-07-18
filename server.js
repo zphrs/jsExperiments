@@ -1,8 +1,9 @@
 var express = require('express')
 var app = express()
 var fs=require('fs')
-const args = process.argv.slice(3)
-const folder = __dirname === process.cwd()?'example':process.cwd()+(args[0]??'')
+const args = process.argv.slice(2)
+console.log(process.argv)
+const folder = process.cwd()+'/'+(args[0]??'example')
 console.log(folder)
 const port = args[1] ?? 2000
 console.log(port)
