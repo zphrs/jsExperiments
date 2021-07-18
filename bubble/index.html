@@ -5,11 +5,12 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="style.css">
-	<title>Home</title>
+	<title>Bubble</title>
 </head>
 <body>
+	<h1>Bubble JSExperiment</h1>
 	<div class="container">
-		<bubble-elem elem-bubbling=".bubbled" match-height=".bubbled" transition-speed="3s" return-position="top left" bubble-size="30.9%" smooth>
+		<bubble-elem elem-bubbling=".bubbled" match-height=".bubbled" transition-speed="3s" return-position="top left" bubble-size="30.9%">
 			<div class="bubbled">
 				<h2>
 					I hope you like this demo!
@@ -24,7 +25,7 @@
 				</h1>
 			</div>
 		</bubble-elem>
-		<bubble-elem elem-bubbling=".bubbled" match-height=".bubbled" transition-speed="5s" return-position="50% 18%" bubble-size="19%">
+		<bubble-elem elem-bubbling=".bubbled" match-height=".bubbled" transition-speed="5s" return-position="20% 80%" bubble-size="19%" smooth>
 			<div class="bubbled about">
 				<h2>
 					Attributes
@@ -35,7 +36,10 @@
 					<strong>return-position</strong> - Where the bubble eventually comes to rest.<br>
 					<strong>bubble-size</strong> - The radius of the bubble.<br>
 					<strong>smooth</strong> - If the element should be animated on initial load to avoid a potential flash. <br>
-					Ex. <code>&lt;bubble-elem elem-bubbling=".bubbled" transition-speed="1.5s" return-position="50% 18%" bubble-size="19%" smooth&gt;&lt;/bubble-elem&gt;</code>
+					<strong>match-height</strong> - Makes the direct children of the bubble-elem the width and height of the input element.<br>
+					Ex. <code>&lt;bubble-elem elem-bubbling=".bubbled" transition-speed="1.5s" return-position="50% 18%" bubble-size="19%" smooth&gt;<br>
+						&lt;div class="bubbled"&gt;&lt;/div&gt;<br>
+						&lt;/bubble-elem&gt;</code>
 				</p>
 			</div>
 			<div class="regular">
@@ -48,19 +52,22 @@
 					<strong>return-position</strong> - Where the bubble eventually comes to rest.<br>
 					<strong>bubble-size</strong> - The radius of the bubble.<br>
 					<strong>smooth</strong> - If the element should be animated on initial load to avoid a potential flash. <br>
-					Ex. <code>&lt;bubble-elem elem-bubbling=".bubbled" transition-speed="1.5s" return-position="50% 18%" bubble-size="19%" smooth&gt;&lt;/bubble-elem&gt;</code>
+					<strong>match-height</strong> - Makes the direct children of the bubble-elem the width and height of the input element.<br>
+					Ex. <code>&lt;bubble-elem elem-bubbling=".bubbled" transition-speed="1.5s" return-position="50% 18%" bubble-size="19%" smooth&gt;<br>
+						<br>
+						&lt;/bubble-elem&gt;</code>
 				</p>
 			</div>
 		</bubble-elem>
-		<bubble-elem elem-bubbling=".bubbled" match-height=".bubbled" transition-speed="5s" return-position="bottom left" bubble-size="19%">
+		<bubble-elem elem-bubbling=".bubbled" match-height=".bubbled" transition-speed="5s" return-position="bottom left" bubble-size="19%" smooth>
 			<div class="bubbled about">
 				<h2>
 					About the bubble movement
 				</h2>
 				<p>
-					The bubble will expand to the size of the "elem-bubbling" element. It will expand towards where your mouse entered the element<br>
+					The bubble will expand to the size of the "elem-bubbling" element. It will expand away from where your mouse entered the element<br>
 					Then when the user moves the mouse out of the element, the bubble will contract to double the "bubble-size" <br>
-					Then the bubble will return to the "return-position"
+					Then the bubble will return to the "return-position" and contract to the "bubble-size."
 				</p>
 			</div>
 			<div class="regular">
@@ -68,9 +75,9 @@
 					About the bubble movement
 				</h2>
 				<p>
-					The bubble will expand to the size of the "elem-bubbling" element. It will expand towards where your mouse entered the element<br>
-					Then when the user moves the mouse out of the element, the bubble will contract to double the "bubble-size" <br>
-					Then the bubble will return to the "return-position"
+					The bubble will expand to the size of the "elem-bubbling" element. It will away from where your mouse entered the element<br>
+					Then when the user moves the mouse out of the element, the bubble will contract to double the "bubble-size." <br>
+					Then the bubble will return to the "return-position" and contract to the "bubble-size."
 				</p>
 			</div>
 		</bubble-elem>

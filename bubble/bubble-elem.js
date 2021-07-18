@@ -128,7 +128,7 @@ class BubbleElem extends HTMLElement {
                     return getDist(e.offsetX, e.offsetY, x, y)
                 }
                 const rad = Math.max(getDFromClick(0, maxSide), getDFromClick(maxSide, 0), getDFromClick(maxSide, maxSide), getDFromClick(0, 0))
-                bubbling.style.clipPath = `circle(${rad}px at ${e.offsetX}px ${e.offsetY}px)`
+                bubbling.style.clipPath = `circle(${rad-10}px at ${e.offsetX}px ${e.offsetY}px)`
                 window.clearTimeout(exitTimeout)
             }
             this.onclick = ()=>{}; // need empty function for mobile safari to register mouse events
