@@ -8,19 +8,73 @@
 	<title>Home</title>
 </head>
 <body>
-	<bubble-elem elem-bubbling=".bubbled" transition-speed="5s" return-position="bottom right">
-		<div class="bubbled">
-			<h1>
-				I hope you like this demo!
-				Check this project out on <a href="https://github.com/zphyrj/jsExperiments" target="_blank"><img src="GitHub-Mark-Light-32px.png" alt="github logo" id="github"></img></a>!
-			</h1>
-		</div>
-		<div class="regular">
-			<h1>
-				HELLO!
-			</h1>
-		</div>
-	</bubble-elem>
+	<div class="container">
+		<bubble-elem elem-bubbling=".bubbled" match-height=".bubbled" transition-speed="3s" return-position="top left" bubble-size="30.9%" smooth>
+			<div class="bubbled">
+				<h2>
+					I hope you like this demo!
+				</h2>
+				<h3>
+					Check out the code on <a href="https://github.com/zphyrj/jsExperiments" target="_blank"><img src="GitHub-Mark-Light-32px.png" alt="github logo" id="github"></img></a>!
+				</h3>
+			</div>
+			<div class="regular">
+				<h1>
+					HELLO!
+				</h1>
+			</div>
+		</bubble-elem>
+		<bubble-elem elem-bubbling=".bubbled" match-height=".bubbled" transition-speed="5s" return-position="50% 18%" bubble-size="19%">
+			<div class="bubbled about">
+				<h2>
+					Attributes
+				</h2>
+				<p>
+					<strong>elem-bubbling</strong> - Selector for the element that will be bubbled. <br>
+					<strong>transition-speed</strong> - The speed of the animation. <br>
+					<strong>return-position</strong> - Where the bubble eventually comes to rest.<br>
+					<strong>bubble-size</strong> - The radius of the bubble.<br>
+					<strong>smooth</strong> - If the element should be animated on initial load to avoid a potential flash. <br>
+					Ex. <code>&lt;bubble-elem elem-bubbling=".bubbled" transition-speed="1.5s" return-position="50% 18%" bubble-size="19%" smooth&gt;&lt;/bubble-elem&gt;</code>
+				</p>
+			</div>
+			<div class="regular">
+				<h2>
+					Attributes
+				</h2>
+				<p>
+					<strong>elem-bubbling</strong> - Selector for the element that will be bubbled. <br>
+					<strong>transition-speed</strong> - The speed of the animation. <br>
+					<strong>return-position</strong> - Where the bubble eventually comes to rest.<br>
+					<strong>bubble-size</strong> - The radius of the bubble.<br>
+					<strong>smooth</strong> - If the element should be animated on initial load to avoid a potential flash. <br>
+					Ex. <code>&lt;bubble-elem elem-bubbling=".bubbled" transition-speed="1.5s" return-position="50% 18%" bubble-size="19%" smooth&gt;&lt;/bubble-elem&gt;</code>
+				</p>
+			</div>
+		</bubble-elem>
+		<bubble-elem elem-bubbling=".bubbled" match-height=".bubbled" transition-speed="5s" return-position="bottom left" bubble-size="19%">
+			<div class="bubbled about">
+				<h2>
+					About the bubble movement
+				</h2>
+				<p>
+					The bubble will expand to the size of the "elem-bubbling" element. It will expand towards where your mouse entered the element<br>
+					Then when the user moves the mouse out of the element, the bubble will contract to double the "bubble-size" <br>
+					Then the bubble will return to the "return-position"
+				</p>
+			</div>
+			<div class="regular">
+				<h2>
+					About the bubble movement
+				</h2>
+				<p>
+					The bubble will expand to the size of the "elem-bubbling" element. It will expand towards where your mouse entered the element<br>
+					Then when the user moves the mouse out of the element, the bubble will contract to double the "bubble-size" <br>
+					Then the bubble will return to the "return-position"
+				</p>
+			</div>
+		</bubble-elem>
+	</div>
 	<script src="bubble-elem.js"></script> 
 	<!-- put the script at the end of the body to beat the first dom paint. -->
 </body>
