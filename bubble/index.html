@@ -5,10 +5,23 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="style.css">
-	<script src="script.js"></script>
 	<title>Home</title>
 </head>
 <body>
-
+	<bubble-elem elem-bubbling=".bubbled" transition-speed="5s" return-position="bottom right">
+		<div class="bubbled">
+			<h1>
+				I hope you like this demo!
+				Check this project out on <a href="https://github.com/zphyrj/jsExperiments" target="_blank"><img src="GitHub-Mark-Light-32px.png" alt="github logo" id="github"></img></a>!
+			</h1>
+		</div>
+		<div class="regular">
+			<h1>
+				HELLO!
+			</h1>
+		</div>
+	</bubble-elem>
+	<script src="bubble-elem.js"></script> 
+	<!-- put the script at the end of the body to beat the first dom paint. -->
 </body>
 </html>
