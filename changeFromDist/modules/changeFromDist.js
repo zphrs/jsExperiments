@@ -28,5 +28,5 @@ export default function changeFromDist(elemToChange, mousePos, changeFunct)
 	{
 		return maxDist;
 	}
-	changeFunct(elemToChange,);
+	changeFunct(elemToChange, distPerc);
 }
