@@ -1,3 +1,19 @@
 html {
 	font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+	height: 100%;
+}
+body {
+	height: 100%;
+	padding: 10px;
+
+	box-sizing: border-box;
+	margin: 0;
+}
+.ex-elems > * {
+	background-color: black;
+	padding: 5px;
+}
+.ex-elems {
+	height: 100%;
+	width: 100%;
 }
