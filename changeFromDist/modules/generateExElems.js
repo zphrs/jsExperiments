@@ -3,9 +3,9 @@
  * returns parent element with all the example divs inside
  *
 */
-export default function generateExElems(rowCt, colCt)
+export default function generateExElems(rowCt, colCt, elemToDup)
 {
-	parent = document.createElement('div')
+	let parent = document.createElement('div')
 	// set parent class
 	parent.className = 'ex-elems'
 	// generate a css grid w/ the number of rows and columns specified
@@ -19,7 +19,7 @@ export default function generateExElems(rowCt, colCt)
 	{
 		for (let j = 0; j < colCt; j++)
 		{
-			let elem = document.createElement('div')
+			let elem = elemToDup?elemToDup.cloneNode(true):document.createElement('div')
 			parent.appendChild(elem)
 		}
 	}
