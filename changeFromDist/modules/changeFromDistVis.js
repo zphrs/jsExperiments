@@ -1,7 +1,7 @@
 import changeFromDist, {reset} from "./changeFromDist.js";
 /**
  * Extends cangeFromDist to visualize the algorithm with a js canvas.
- * 
+ * TODO: make changeFromDistVis work with multiple touch points
  */
 export default function changeFromDistVis(elemToChange, mousePos, changeFunct) {
     const parent = elemToChange.parentElement;
@@ -13,14 +13,15 @@ export default function changeFromDistVis(elemToChange, mousePos, changeFunct) {
     {
         return;
     }
-    changeFromDist(elemToChange, mousePos, changeFunct);
     const ctx = canvas.getContext('2d');
+    ctx.globalAlpha = 1 - changeFromDist(elemToChange, mousePos, changeFunct);
+    mousePos = mousePos[0]
     // listen to resize events
     function drawVis()
     {
         // draw line from mousePos to elemToChange center
         ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 5;
+        ctx.lineWidth = Math.max(Math.min(elemToChange.clientHeight, elemToChange.clientWidth) / 50, 1);
         ctx.beginPath();
         ctx.moveTo(mousePos.x, mousePos.y);
         ctx.lineTo(elemToChange.offsetLeft + elemToChange.offsetWidth / 2, elemToChange.offsetTop + elemToChange.offsetHeight / 2);
@@ -51,10 +52,13 @@ export function newFrame(parent) {
     canvas.height = parent.offsetHeight - 1;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    console.log('cleared canvas')
 }
 export function resetVis(elemToChange, changeFunct, val)
 {
     const parent = elemToChange.parentElement;
-    if (elemToChange !== parent.querySelector('.canvas-vis')) 
+    if (elemToChange !== parent.querySelector('.canvas-vis'))
+    {
         reset(elemToChange, changeFunct, val)
+    }
 }

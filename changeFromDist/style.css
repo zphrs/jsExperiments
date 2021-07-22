@@ -4,23 +4,23 @@ html {
 }
 body {
 	height: 100%;
-	padding: 10px;
 	box-sizing: border-box;
 	margin: 0;
 }
 .ex-elems > * {
 	background-color: black;
-	padding: 5px;
 	font-size: 20px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	font-weight: 700;
+	touch-action: none;
 }
 .ex-elems {
 	height: 100%;
 	width: 100%;
 	padding: 5px;
+	box-sizing: border-box;
 	overflow: hidden;
 }

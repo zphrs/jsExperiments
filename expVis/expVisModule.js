@@ -22,16 +22,11 @@ class ExpVis extends HTMLElement {
 					display: inline-flex;
 					width: max-content;
 					align-items: center;
-					padding-left: 0.5em;
-					padding-right: 0.5em;
 				}
 				.exp-op {	
 					font-family: monospace;
 					font-size: 1em;
 					color: #000;
-					padding-left: 0.5em;
-					padding-right: 0.5em;
-					border-radius: 0.5em;
 					background-color: #fff;
 					display: inline-flex;
 					width: max-content;

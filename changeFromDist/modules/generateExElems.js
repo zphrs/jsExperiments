@@ -13,7 +13,6 @@ export default function generateExElems(rowCt, colCt, elemToDup)
 	console.log(Array.from(Array(rowCt).keys()).map(()=>1 + 'fr'))
 	parent.style.gridTemplateColumns = Array.from(Array(rowCt).keys()).map(()=>1 + 'fr').join(' ')
 	parent.style.gridTemplateRows = Array.from(Array(colCt).keys()).map(()=>1 + 'fr').join(' ')
-	parent.style.gap = '5px'
 	// generate a div for each row and column
 	for (let i = 0; i < rowCt; i++)
 	{
