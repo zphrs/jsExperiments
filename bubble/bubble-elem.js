@@ -1,3 +1,5 @@
+// https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
+
 let transitionSpeed = '1s';
 let bubbleSize = '20%';
 let returnPosition = 'top left'
