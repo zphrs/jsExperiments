@@ -12,7 +12,7 @@ window.addEventListener('load', function() {
     let touches = {}
     function storeEachTouch(event)
     {
-        touches[event.pointerId] = ({x:event.pageX-parentPosOnDocument.x, y:event.pageY - parentPosOnDocument.y});
+        touches[event.pointerId] = ({x:event.pageX, y:event.pageY});
         changeEachChildsColorOnMouseMove(Object.keys(touches).map(key=>touches[key]));
     }
     function removeTouch(event)
@@ -21,7 +21,6 @@ window.addEventListener('load', function() {
         resetElems()
     }
     function changeEachChildsColorOnMouseMove(touches) {
-        // console.log(event.offsetX, event.pageX-parentPosOnDocument.x, event.pageY - parentPosOnDocument.y);
         newFrame(parent);
         for (let i = 0; i < parent.children.length; i++) {
             changeFromDistVis(parent.children[i], touches, setHue);
@@ -48,11 +47,10 @@ window.addEventListener('load', function() {
 window.addEventListener('load', function() {
     let parent = generateExElems(5, 5);
     document.body.appendChild(parent);
-    let parentPosOnDocument = {x: parent.getBoundingClientRect().left + document.documentElement.scrollLeft, y: parent.getBoundingClientRect().top + document.documentElement.scrollTop};
     let touches = {}
     function storeEachTouch(event)
     {
-        touches[event.pointerId] = ({x:event.pageX-parentPosOnDocument.x, y:event.pageY - parentPosOnDocument.y});
+        touches[event.pointerId] = ({x:event.pageX, y:event.pageY});
         changeEachChildsColorOnMouseMove(Object.keys(touches).map(key=>touches[key]));
     }
     function removeTouch(event)
@@ -92,11 +90,10 @@ window.addEventListener('load', function() {
     let parent = generateExElems(50, 50);
     parent.style.gridGap = '0';
     document.body.appendChild(parent);
-    let parentPosOnDocument = {x: parent.getBoundingClientRect().left + document.documentElement.scrollLeft, y: parent.getBoundingClientRect().top + document.documentElement.scrollTop};
     let touches = {}
     function storeEachTouch(event)
     {
-        touches[event.pointerId] = ({x:event.pageX-parentPosOnDocument.x, y:event.pageY - parentPosOnDocument.y});
+        touches[event.pointerId] = ({x:event.pageX, y:event.pageY});
         changeEachChildsColorOnMouseMove(Object.keys(touches).map(key=>touches[key]));
     }
     function removeTouch(event)
