@@ -1,32 +1,32 @@
 /**
  * 
  * @param {HTMLElement} elemToChange
- * @param {Array: Number} mousePos {x, y}
- * @param {function(element, amountToChange)} changeFunct 
- * @returns {Number} The distance between the mouse and the element divided by the distance between
+ * @param {Array<{x:Number, y:Number}>} mousePos The position of the mouse relative to the parent
+ * @param {function(HTMLElement, Number)} changeFunct 
+ * @returns {[Number, HTMLElement]} distance, parentPos
+ * @description It will call the function changeFunct with the element and the amount of change.
  */
 export default function changeFromDist(elemToChange, mousePos, changeFunct)
 {
 	const parent = elemToChange.parentElement
-	function getMousePosRelativeToElemParent()
+	function getDist(x, y)
 	{
-		const parentBox = parent.getBoundingClientRect();
-		const parentPos = {
-			x: mousePos.x, 
-			y: mousePos.y
-		}
-		return parentPos;
+		return Math.sqrt(Math.pow((elemToChange.offsetTop + elemToChange.offsetHeight/2) - y, 2)+Math.pow((elemToChange.offsetLeft + elemToChange.offsetWidth/2) - x, 2))
 	}
-	function getDistFromMouseToElem()
+	function getMinDist()
 	{
-		let parentPos = getMousePosRelativeToElemParent()
-		return Math.sqrt(Math.pow((elemToChange.offsetTop + elemToChange.offsetHeight/2) - parentPos.y, 2)+Math.pow((elemToChange.offsetLeft + elemToChange.offsetWidth/2) - parentPos.x, 2))
+		return Math.min(mousePos.map(e=>getDist(e.x, e.y)))
 	}
 	let maxDist = Math.sqrt(Math.pow(parent.offsetWidth, 2)+Math.pow(parent.offsetHeight, 2));
-	const distPerc = getDistFromMouseToElem()/maxDist;
+	const distPerc = getMinDist()/maxDist;
 	if (!changeFunct)
 	{
 		return maxDist;
 	}
-	changeFunct(elemToChange, distPerc);
+	changeFunct && changeFunct(elemToChange, distPerc);
+	return distPerc;
+}
+export function reset(elementToChange, changeFunct, val)
+{
+	changeFunct(elementToChange, val??.5);
 }

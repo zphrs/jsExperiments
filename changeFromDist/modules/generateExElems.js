@@ -23,9 +23,5 @@ export default function generateExElems(rowCt, colCt, elemToDup)
 			parent.appendChild(elem)
 		}
 	}
-
-
-
-	document.body.appendChild(parent)
 	return parent;
 }
