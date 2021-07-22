@@ -1,3 +1,5 @@
+// https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
+
 
 /**
  * returns parent element with all the example divs inside

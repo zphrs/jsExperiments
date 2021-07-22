@@ -1,3 +1,5 @@
+// https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
+
 import hsl from './hsl.js';
 const sects=document.getElementsByTagName('section');
 const cardHolder = document.getElementsByClassName('cards')[0];

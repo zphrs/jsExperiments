@@ -1,3 +1,5 @@
+// https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
+
 var express = require('express')
 var app = express()
 var fs=require('fs')

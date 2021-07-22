@@ -1,3 +1,5 @@
+// https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
+
 import generateExElems from "./modules/generateExElems.js";
 import changeFromDist, {reset} from "./modules/changeFromDist.js";
 import changeFromDistVis, {resetVis, newFrame} from "./modules/changeFromDistVis.js";

@@ -1,3 +1,5 @@
+// https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
+
 import changeFromDist, {reset} from "./changeFromDist.js";
 /**
  * Extends cangeFromDist to visualize the algorithm with a js canvas.

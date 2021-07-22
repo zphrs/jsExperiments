@@ -1,3 +1,5 @@
+// https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
+
 console.log(parenthasizer('1+3/2'))
 function strToExp(str)
 {

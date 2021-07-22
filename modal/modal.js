@@ -1,3 +1,5 @@
+// https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
+
 'use strict';
 /**
  * <modal expand-elem="Nth child | #id | .className (first occurance) | tagname(first occurance) | tagname[Nth elem]..." elemToModal="true (image animates to position in modal) | false(modal positions so elem doesn't move)" transition-speed="[0-9]+s|ms">

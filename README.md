@@ -1,5 +1,7 @@
 # jsExperiments
 ## Making the web feel alive one experiment at a time
+### License/Use
+It is licensed under the MIT license which means that you may use the software however you like but you must include the text from the LICENSE file in your project. If you take snippets from a javascript file please link (https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE) to the license as a comment above the snippet. If you contribute to the repository feel free to commit a MIT license to the directory that you contributed to, and add a commented link at the top of the file/snippet you contributed to, just to give yourself credit as well.
 ### To run: 
 1. `npm install`
 2. `npm start folderName` - Replace `folderName` with the name of the experiment you want to look at
@@ -7,7 +9,7 @@
 * you can also cd into the folder that you want to look at and run `npm start`
 ### List of folders to check out / contribute to
 * [`starterTemplate`](https://zphyrj.github.io/jsExperiments/starterTemplate) - if you want to make another project copy all the files in here and paste them in a new folder.
-* [`bubble`](https://zphyrj.github.io/jsExperiments/bubble.html) - taking the code from imgTransition for the clip path animation and the code from the modal query selector and making an element that clip paths whatever element specified, leaving everything else alone.
+* [`bubble`](https://zphyrj.github.io/jsExperiments/bubble) - taking the code from imgTransition for the clip path animation and the code from the modal query selector and making an element that clip paths whatever element specified, leaving everything else alone.
 * [`changeFromDist`](https://zphyrj.github.io/jsExperiments/changeFromDist) - Runs an input function with the input element and a value between 0 and 1 depending on the distance between the mouse and the element, while the mouse is within the parent element of the input element. I made it to change css properties, but you can make the function do anything with the distance number.
 * [`example`](https://zphyrj.github.io/jsExperiments/example) - An example, complete with a home page and a 404 page
 * [`expVis`](https://zphyrj.github.io/jsExperiments/expVis) - Kind of buggy with equation parsing/ui needs work but the core vis is done. Take in expression and let user step through what steps JS would take to evaluate the expression.

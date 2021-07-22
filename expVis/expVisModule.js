@@ -1,3 +1,5 @@
+// https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
+
 class ExpVis extends HTMLElement {
 	constructor() {
 		super()

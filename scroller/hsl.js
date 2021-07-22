@@ -1,3 +1,5 @@
+// https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
+
 class hsl {
 	constructor(h, s, l, a)
 	{
