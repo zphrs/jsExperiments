@@ -1,4 +1,4 @@
-let boidCt = 10;
+let boidCt = 2000;
 function normalize(...args) {
     let vecLength = Math.sqrt(args.map(e=>e*e).reduce((a, b) => a + b))
     return args.map((x) => x/vecLength)
@@ -34,7 +34,7 @@ window.addEventListener('load', function() {
     // create boids
     let boids = []
     for (let i = 0; i < boidCt; i++) {
-        boids.push(new Boid([canvas.width*Math.random(), canvas.height*Math.random()], normalize(Math.random()-.5, Math.random()-.5), 500, 3))
+        boids.push(new Boid([canvas.width*Math.random(), canvas.height*Math.random()], normalize(Math.random()-.5, Math.random()-.5), 200, 2))
     }
     // start animation
     start(ctx, boids)
@@ -254,10 +254,10 @@ async function initComputeWebgl(boids)
     gl.useProgram(program);
     gl.uniform1i(srcTexLoc, 0);  // tell the shader the src texture is on texture unit 0
     gl.uniform2f(srcDimensionsLoc, srcWidth, srcHeight);
-    gl.uniform1f(separationLoc, 1);
-    gl.uniform1f(alignmentLoc, 0.0);
-    gl.uniform1f(cohesionLoc, 0.0);
-    gl.uniform1f(stubbornnessLoc, .1);
+    gl.uniform1f(separationLoc, .8);
+    gl.uniform1f(alignmentLoc, 0.1);
+    gl.uniform1f(cohesionLoc, 0.000005);
+    gl.uniform1f(stubbornnessLoc, .6);
     gl.drawArrays(gl.TRIANGLES, 0, 6);  // draw 2 triangles (6 vertices)
     
     // get the result
@@ -294,7 +294,7 @@ async function initComputeWebgl(boids)
     }
     out.updateBoidCt = (boids)=>
     {
-        if (boids.length<1000)
+        if (boids.length<10000)
         {
             boids.push(new Boid([canvas.width*Math.random(), canvas.height*Math.random()], normalize(0, 1), 10, 5))
             srcHeight = boids.length;

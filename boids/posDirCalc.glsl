@@ -8,7 +8,7 @@ uniform float separation;
 uniform float alignment;
 uniform float cohesion;
 uniform float stubbornness;
-const int MAX_BOIDS = 1000;
+const int MAX_BOIDS = 10000;
 
 #define FLOAT_MAX  1.70141184e38
 #define FLOAT_MIN  1.17549435e-38
@@ -68,6 +68,26 @@ void main() {
     
     //Find the neighbors
     int boidCt = int(srcDimensions.y);
+    // for (int loopInd = 0; loopInd<MAX_BOIDS; loopInd++) {
+    //     int i = loopInd+int(gl_FragCoord.y);
+    //     if (i>boidCt) {break;}
+    //     if (i != int(myCoord.y)) {
+    //         vec4 neighborData = texture2D(boids, vec2(0.5, float(i) / srcDimensions.y));
+    //         vec2 neighborPos = neighborData.xy;
+    //         vec2 neighborDir = neighborData.zw;
+    //         float dist = distance(myPos, neighborPos);
+    //         if (myPos.x - neighborPos.x > 100.0) {break;}
+    //         if (myPos.x - neighborPos.x < -100.0) {break;}
+    //         if (dist < 200.0 && dist > 0.0) {
+    //             sumOfPositions += getXorY(neighborPos, x)/getXorY(neighborPos - myPos, x);
+    //             sumOfDirections += getXorY(neighborDir, x);
+    //             neighborCt++;
+    //         }
+    //         if (dist < 100.0 && dist > 0.0) {
+    //             sumOfRepulsiveForces += getXorY(normalize(myPos - neighborPos), x)/dist;
+    //         }
+    //     }
+    // }
     for (int i = 0; i<MAX_BOIDS; i++) {
         if (i>boidCt) {break;}
         if (i != int(myCoord.y)) {
@@ -75,7 +95,7 @@ void main() {
             vec2 neighborPos = neighborData.xy;
             vec2 neighborDir = neighborData.zw;
             float dist = distance(myPos, neighborPos);
-            if (dist < 200.0 && dist > 0.0) {
+            if (dist < 30.0 && dist > 0.0) {
                 sumOfPositions += getXorY(neighborPos, x)/getXorY(neighborPos - myPos, x);
                 sumOfDirections += getXorY(neighborDir, x);
                 neighborCt++;
@@ -85,6 +105,26 @@ void main() {
             }
         }
     }
+    // for (int loopInd = MAX_BOIDS; loopInd>=0; loopInd--) {
+    //     int i = loopInd-int(gl_FragCoord.y);
+    //     if (i>boidCt) {break;}
+    //     if (i != int(myCoord.y)) {
+    //         vec4 neighborData = texture2D(boids, vec2(0.5, float(i) / srcDimensions.y));
+    //         vec2 neighborPos = neighborData.xy;
+    //         vec2 neighborDir = neighborData.zw;
+    //         float dist = distance(myPos, neighborPos);
+    //         if (myPos.x - neighborPos.x > 100.0) {break;}
+    //         if (myPos.x - neighborPos.x < -100.0) {break;}
+    //         if (dist < 200.0 && dist > 0.0) {
+    //             sumOfPositions += getXorY(neighborPos, x)/getXorY(neighborPos - myPos, x);
+    //             sumOfDirections += getXorY(neighborDir, x);
+    //             neighborCt++;
+    //         }
+    //         if (dist < 100.0 && dist > 0.0) {
+    //             sumOfRepulsiveForces += getXorY(normalize(myPos - neighborPos), x)/dist;
+    //         }
+    //     }
+    // }
 
     if (neighborCt > 0) {
         float nCt = float(neighborCt);
