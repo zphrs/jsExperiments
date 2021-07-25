@@ -20,7 +20,7 @@ window.addEventListener('load', function() {
         canvas.style.zIndex = 0
         canvas.style.touchAction = 'none'
         // mount canvas
-        document.body.appendChild(canvas)
+        document.body.prepend(canvas)
         // listen to resize and scale canvas
         window.addEventListener('resize', function() {
             canvas.width = window.innerWidth
@@ -126,11 +126,11 @@ async function start(ctx, boids, pointerPos) {
                 for (var i = 0; i<2; i++)
                 {
                     boidsXSorted.pop();
-                    boidCt--;
                 }
+                glHandler.updateBoidCt(boidsXSorted)
             }
         }
-        if (dt < 1/60 && (time - time10LastAdded) > 50*100/boidsXSorted.length && boidsXSorted.length < Math.min(ctx.canvas.width, ctx.canvas.height) && boidsXSorted.length < 1990)
+        if (dt < 1/60 && (time - time10LastAdded) > 50*boidsXSorted.length/100 && boidsXSorted.length < Math.min(ctx.canvas.width, ctx.canvas.height) && boidsXSorted.length < 1990)
         {
             time10LastAdded = performance.now()
             for (var i = 0; i<8; i++)
@@ -378,7 +378,7 @@ async function initComputeWebgl(boids, pointerPos)
     function updateWeights()
     {
         gl.uniform1f(separationLoc, 1*1000/Math.min(canvas.width, canvas.height));
-        gl.uniform1f(alignmentLoc, 0.1*1000/Math.min(canvas.width, canvas.height));
+        gl.uniform1f(alignmentLoc, 0.05*1000/Math.min(canvas.width, canvas.height));
         gl.uniform1f(cohesionLoc, 0.000005*1000/Math.min(canvas.width, canvas.height));
         gl.uniform1f(stubbornnessLoc, 1000*Math.min(canvas.width, canvas.height));
         gl.uniform1f(pointerAttractionLoc, .1*1000/Math.min(canvas.width, canvas.height));

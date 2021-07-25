@@ -7,9 +7,13 @@ html {
 body {
 	overflow: hidden;
 }
+canvas {
+	z-index: -1;
+}
 .glass {
 	margin: 10px;
 	padding: 10px;
+	z-index: 10;
 	border-radius: 5px;
 	background-color: #3C186B88;
 	color: hsl(266, 100%, 85%);
