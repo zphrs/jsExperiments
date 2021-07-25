@@ -107,7 +107,7 @@ async function start(ctx, boids, pointerPos) {
             boidsXSorted[i].update(ctx)
             boidsXSorted[i].draw(ctx)
         }
-        if (boidsXSorted.length < 9990)
+        if (boidsXSorted.length < 9990 && boidsXSorted.length < Math.min(ctx.canvas.width, ctx.canvas.height)/4)
         {
             if (dt>1/55)
             {
