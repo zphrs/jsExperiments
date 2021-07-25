@@ -145,7 +145,7 @@ Boid.prototype.draw = function(ctx) {
     // get the positions of the boids, and then draw them properly with WebGL - takes a lot of time
     // to getPixels and then draw them in javascipt, better to do almost all of it on gpu
     const t = this;
-    const size = t.radius* Math.max(ctx.canvas.width, ctx.canvas.height) / boidCt
+    const size = Math.max(t.radius* Math.max(ctx.canvas.width, ctx.canvas.height) / boidCt, 1)
     function drawTrail()
     {
         ctx.beginPath()
