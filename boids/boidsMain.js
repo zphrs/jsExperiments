@@ -1,4 +1,4 @@
-let boidCt = 2000;
+let boidCt = 100;
 function normalize(...args) {
     let vecLength = Math.sqrt(args.map(e=>e*e).reduce((a, b) => a + b))
     return args.map((x) => x/vecLength)
@@ -34,7 +34,7 @@ window.addEventListener('load', function() {
     // create boids
     let boids = []
     for (let i = 0; i < boidCt; i++) {
-        boids.push(new Boid([canvas.width*Math.random(), canvas.height*Math.random()], normalize(Math.random()-.5, Math.random()-.5), 200, 2))
+        boids.push(new Boid([canvas.width*Math.random(), canvas.height*Math.random()], normalize(Math.random()-.5, Math.random()-.5), 500, 2))
     }
     // start animation
     start(ctx, boids)
@@ -156,7 +156,7 @@ async function initComputeWebgl(boids)
     }
     `;
     // import fragment shader from posDirCalc.glsl
-    const fs = await (await fetch('../posDirCalc.glsl')).text();
+    const fs = await (await fetch('./posDirCalc.glsl')).text();
     // output needs width of 2 because each rgb pixel stores one 32 bit float, and we have 2 floats for x and y direction
     const dstWidth = 2;
     let dstHeight = boidCt;

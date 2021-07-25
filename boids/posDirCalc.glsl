@@ -4,11 +4,12 @@ precision highp float;
 
 uniform sampler2D boids;
 uniform vec2 srcDimensions;
+uniform vec2 mousePos;
 uniform float separation;
 uniform float alignment;
 uniform float cohesion;
 uniform float stubbornness;
-const int MAX_BOIDS = 10000;
+const int MAX_BOIDS = 100;
 
 #define FLOAT_MAX  1.70141184e38
 #define FLOAT_MIN  1.17549435e-38
