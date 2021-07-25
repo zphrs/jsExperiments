@@ -1,5 +1,5 @@
-let boidCt = 50;
-let minBoidCt = 50;
+let boidCt = 200;
+let minBoidCt = 200;
 function normalize(...args) {
     let vecLength = Math.sqrt(args.map(e=>e*e).reduce((a, b) => a + b))
     return args.map((x) => x/vecLength)
@@ -100,8 +100,8 @@ async function start(ctx, boids, pointerPos) {
     // clear canvas
     let boidsXSorted = boids
     let glHandler = await initComputeWebgl(boids, pointerPos)
-    let timeLastAdded = performance.now()
     let prevTime = performance.now();
+    let timeRemovedAt = prevTime;
     let time10LastAdded = prevTime;
     function perFrame(time)
     {
@@ -122,7 +122,8 @@ async function start(ctx, boids, pointerPos) {
         if (dt>1/55)
         {
             time10LastAdded = performance.now()
-            if (dt>1/24 && boidsXSorted.length-2 > minBoidCt) {
+            if (dt>1/24 && boidsXSorted.length-2 > minBoidCt && (time - timeRemovedAt) > 1000) {
+                timeRemovedAt = time
                 for (var i = 0; i<2; i++)
                 {
                     boidsXSorted.pop();
