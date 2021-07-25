@@ -112,9 +112,11 @@ async function start(ctx, boids, pointerPos) {
             if (dt>1/55)
             {
                 time10LastAdded = performance.now()
-                for (var i = 0; i<10; i++)
-                {
-                    boidsXSorted.pop();
+                if (dt>1/30) {
+                    for (var i = 0; i<10; i++)
+                    {
+                        boidsXSorted.pop();
+                    }
                 }
             }
             if (dt < 1/60 && (time - time10LastAdded) > 50)
