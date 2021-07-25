@@ -14,4 +14,5 @@ body {
 	background-color: #3C186B88;
 	color: hsl(266, 100%, 85%);
 	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 }

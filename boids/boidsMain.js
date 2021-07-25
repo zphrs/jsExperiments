@@ -17,8 +17,8 @@ window.addEventListener('load', function() {
         canvas.style.position = 'absolute'
         canvas.style.top = 0
         canvas.style.left = 0
-        canvas.style.zIndex = -1
-        canvas.style.pointerEvents = 'none'
+        canvas.style.zIndex = 0
+        canvas.style.touchAction = 'none'
         // mount canvas
         document.body.appendChild(canvas)
         // listen to resize and scale canvas
@@ -122,10 +122,11 @@ async function start(ctx, boids, pointerPos) {
         if (dt>1/55)
         {
             time10LastAdded = performance.now()
-            if (dt>1/30 && boidsXSorted.length > minBoidCt-2) {
+            if (dt>1/24 && boidsXSorted.length-2 > minBoidCt) {
                 for (var i = 0; i<2; i++)
                 {
                     boidsXSorted.pop();
+                    boidCt--;
                 }
             }
         }
