@@ -1,11 +1,17 @@
 html {
 	font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 	background-color: rgb(32, 32, 32);
+	touch-action: none;
+
 }
 body {
 	overflow: hidden;
-	pointer-events: none;
 }
-canvas {
-	touch-action: none;
+.glass {
+	margin: 10px;
+	padding: 10px;
+	border-radius: 5px;
+	background-color: #3C186B88;
+	color: hsl(266, 100%, 85%);
+	backdrop-filter: blur(10px);
 }

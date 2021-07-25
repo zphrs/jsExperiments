@@ -1,4 +1,4 @@
-precision highp float;
+precision mediump float;
 
 
 
@@ -10,6 +10,8 @@ uniform float alignment;
 uniform float cohesion;
 uniform float stubbornness;
 uniform float pointerAttraction;
+uniform float maxNeighborDistance;
+uniform float maxCloseness;
 const int MAX_BOIDS = 10000;
 
 #define FLOAT_MAX  1.70141184e38
@@ -156,6 +158,7 @@ void main() {
             value += getXorY(normalize(pointerPos - myPos), x)*pointerAttraction;
             float dist = distance(myPos, pointerPos);
             value += getXorY(normalize(myPos - pointerPos), x)/dist*(separation+pointerAttraction);
+            value += sumOfRepulsiveForces*separation;
         }
         if (value == 0.0) {
             value = getXorY(myDir, x);

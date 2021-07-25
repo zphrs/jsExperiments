@@ -1,4 +1,5 @@
-let boidCt = 100;
+let boidCt = 50;
+let minBoidCt = 50;
 function normalize(...args) {
     let vecLength = Math.sqrt(args.map(e=>e*e).reduce((a, b) => a + b))
     return args.map((x) => x/vecLength)
@@ -16,7 +17,7 @@ window.addEventListener('load', function() {
         canvas.style.position = 'absolute'
         canvas.style.top = 0
         canvas.style.left = 0
-        canvas.style.zIndex = 0
+        canvas.style.zIndex = -1
         canvas.style.pointerEvents = 'none'
         // mount canvas
         document.body.appendChild(canvas)
@@ -34,11 +35,18 @@ window.addEventListener('load', function() {
     // create boids
     let boids = []
     for (let i = 0; i < boidCt; i++) {
-        boids.push(new Boid([canvas.width*Math.random(), canvas.height*Math.random()], normalize(Math.random()-.5, Math.random()-.5), 500, 5))
+        boids.push(new Boid(
+            [canvas.width*Math.random(), canvas.height*Math.random()], 
+            normalize(Math.random()-.5, Math.random()-.5), 
+            500, 
+            5
+        ))
     }
     // start animation
     const pointerPos = [-2, -2]
     this.mouseOn = false;
+    let onAt = 0;
+    let turnOff = undefined
     updatePointerPos = (e) => 
     {
         if (this.mouseOn)
@@ -46,11 +54,14 @@ window.addEventListener('load', function() {
             pointerPos[0] = e.pageX - canvas.offsetLeft
             pointerPos[1] = e.offsetY - canvas.offsetTop
             this.mouseOn = true
+            window.clearTimeout(turnOff)
         }
         else
         {
-            pointerPos[0] -2
-            pointerPos[1] = -2
+            turnOff = window.setTimeout(() => {
+                pointerPos[0] -2
+                pointerPos[1] = -2
+            }, Math.max(onAt - performance.now() + 1000), 0)
         }
     }
     window.addEventListener('pointermove', updatePointerPos);
@@ -71,6 +82,7 @@ window.addEventListener('load', function() {
     window.addEventListener('pointerdown', e=>
     {
         this.mouseOn = true;
+        onAt = performance.now()
         updatePointerPos(e)
     })
     window.addEventListener('pointerout', e=>
@@ -107,27 +119,58 @@ async function start(ctx, boids, pointerPos) {
             boidsXSorted[i].update(ctx)
             boidsXSorted[i].draw(ctx)
         }
-        if (boidsXSorted.length < 9990 && boidsXSorted.length < Math.min(ctx.canvas.width, ctx.canvas.height)/4)
+        if (dt>1/55)
         {
-            if (dt>1/55)
-            {
-                time10LastAdded = performance.now()
-                if (dt>1/30) {
-                    for (var i = 0; i<10; i++)
-                    {
-                        boidsXSorted.pop();
-                    }
-                }
-            }
-            if (dt < 1/60 && (time - time10LastAdded) > 50)
-            {
-                time10LastAdded = performance.now()
-                for (var i = 0; i<10; i++)
+            time10LastAdded = performance.now()
+            if (dt>1/30 && boidsXSorted.length > minBoidCt-2) {
+                for (var i = 0; i<2; i++)
                 {
-                    boidsXSorted.push(new Boid([Math.random()*ctx.canvas.width, Math.random()*ctx.canvas.height], normalize(Math.random()-.5, Math.random()-.5), 500, 5))
+                    boidsXSorted.pop();
                 }
-                glHandler.updateBoidCt(boidsXSorted)
             }
+        }
+        if (dt < 1/60 && (time - time10LastAdded) > 50*100/boidsXSorted.length && boidsXSorted.length < Math.min(ctx.canvas.width, ctx.canvas.height) && boidsXSorted.length < 1990)
+        {
+            time10LastAdded = performance.now()
+            for (var i = 0; i<8; i++)
+            {
+                switch(i%4)
+                {
+                    case 0: // enter from left
+                        boidsXSorted.push(new Boid(
+                            [0, ctx.canvas.height*Math.random()],
+                            [Math.random()*.5, Math.random()-.5],
+                            500,
+                            5
+                        ))
+                        break;
+                    case 1: // enter from right
+                        boidsXSorted.push(new Boid(
+                            [ctx.canvas.width, ctx.canvas.height*Math.random()],
+                            [-Math.random()*.5, Math.random()-.5],
+                            500,
+                            5
+                        ))
+                        break;
+                    case 2: // enter from top
+                        boidsXSorted.push(new Boid(
+                            [ctx.canvas.width*Math.random(), 0],
+                            normalize(Math.random()-.5, Math.random()*.5),
+                            500,
+                            5
+                        ))
+                        break;
+                    case 3: // enter from bottom
+                        boidsXSorted.push(new Boid(
+                            [ctx.canvas.width*Math.random(), ctx.canvas.height],
+                            normalize(Math.random()-.5, -Math.random()*.5),
+                            500,
+                            5
+                        ))
+                        break;
+                }
+            }
+            glHandler.updateBoidCt(boidsXSorted)
         }
         // request new frame
         requestAnimationFrame(perFrame)
@@ -152,7 +195,7 @@ Boid.prototype.draw = function(ctx) {
     {
         ctx.beginPath()
         ctx.moveTo(t.pos[0], t.pos[1])
-        ctx.lineTo(t.pos[0] - t.direction[0]*size*2, t.pos[1]  - t.direction[1]*size*2)
+        ctx.lineTo(t.pos[0] - t.direction[0]*size*1.5, t.pos[1]  - t.direction[1]*size*1.5)
         ctx.strokeStyle = '#8334eb'
         ctx.lineWidth = size
         ctx.stroke()
@@ -162,17 +205,17 @@ Boid.prototype.draw = function(ctx) {
         
         ctx.beginPath()
         ctx.moveTo(t.pos[0], t.pos[1])
-        ctx.lineTo(t.pos[0] - t.direction[0]*t.radius*4, t.pos[1]  - t.direction[1]*t.radius*4)
-        ctx.strokeStyle = '#FFF'
-        ctx.lineWidth = t.radius*2
+        ctx.lineTo(t.pos[0] - t.direction[0]*size, t.pos[1]  - t.direction[1]*size)
+        ctx.strokeStyle = '#AD7CEE'
+        ctx.lineWidth = size
         ctx.stroke()
     }
     drawTrail()
-    // drawHead()
+    drawHead()
 }
 Boid.prototype.update = function(ctx)
 {
-    this.direction = normalize(this.direction)
+    this.direction = normalize(this.direction).map(e=>e+Math.random()*0.01-0.005)
     function normalize(direction)
     {
         let length = Math.sqrt(direction[0]*direction[0] + direction[1]*direction[1])
@@ -183,7 +226,7 @@ Boid.prototype.update = function(ctx)
         }
         return [direction[0]/length, direction[1]/length]
     }
-    this.pos = this.pos.map((x, i) => x+this.direction[i]*this.speed*(1/60)*Math.min(ctx.canvas.width,ctx.canvas.height)/1000)
+    this.pos = this.pos.map((x, i) => x+this.direction[i]*this.speed*(1/60)*Math.min(ctx.canvas.width,ctx.canvas.height)/2000)
     if (this.pos[0] > ctx.canvas.width)
     {
         this.pos[0] -= ctx.canvas.width
@@ -329,13 +372,20 @@ async function initComputeWebgl(boids, pointerPos)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     
     gl.useProgram(program);
-    gl.uniform1i(srcTexLoc, 0.8);  // tell the shader the src texture is on texture unit 0
+    gl.uniform1i(srcTexLoc, 0);  // tell the shader the src texture is on texture unit 0
     gl.uniform2f(srcDimensionsLoc, srcWidth, srcHeight);
-    gl.uniform1f(separationLoc, 0.8);
-    gl.uniform1f(alignmentLoc, 0.1);
-    gl.uniform1f(cohesionLoc, 0.0000005);
-    gl.uniform1f(stubbornnessLoc, .1);
-    gl.uniform1f(pointerAttractionLoc, .05);
+    function updateWeights()
+    {
+        gl.uniform1f(separationLoc, 1*1000/Math.min(canvas.width, canvas.height));
+        gl.uniform1f(alignmentLoc, 0.1*1000/Math.min(canvas.width, canvas.height));
+        gl.uniform1f(cohesionLoc, 0.000005*1000/Math.min(canvas.width, canvas.height));
+        gl.uniform1f(stubbornnessLoc, 1000*Math.min(canvas.width, canvas.height));
+        gl.uniform1f(pointerAttractionLoc, .1*1000/Math.min(canvas.width, canvas.height));
+    }
+    updateWeights();
+    window.addEventListener('resize', () => {
+        updateWeights();
+    });
     gl.uniform2f(pointerPosLoc, pointerPos[0], pointerPos[1]);
     gl.drawArrays(gl.TRIANGLES, 0, 6);  // draw 2 triangles (6 vertices)
     
@@ -349,6 +399,9 @@ async function initComputeWebgl(boids, pointerPos)
     let out = function() {};
     out.getNextFrame = (boids, pointerPos) =>
     {
+        if (boidCt !== boids.length) {
+            out.updateBoidCt(boids);
+        }
         // gl.bindTexture(gl.TEXTURE_2D, tex);
         // gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1); // see https://webglfundamentals.org/webgl/lessons/webgl-data-textures.html
         gl.texImage2D(
@@ -382,8 +435,6 @@ async function initComputeWebgl(boids, pointerPos)
             dstHeight = boids.length;
             canvas.height = boids.length;
             gl.uniform2f(srcDimensionsLoc, srcWidth, srcHeight);
-            gl.uniform1f(separationLoc, 0.8+5*boids.length/10000);
-            gl.uniform1f(pointerAttractionLoc, .05+.2*boids.length/10000);
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         }
         else
