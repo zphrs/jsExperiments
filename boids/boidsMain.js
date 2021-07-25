@@ -34,33 +34,98 @@ window.addEventListener('load', function() {
     // create boids
     let boids = []
     for (let i = 0; i < boidCt; i++) {
-        boids.push(new Boid([canvas.width*Math.random(), canvas.height*Math.random()], normalize(Math.random()-.5, Math.random()-.5), 500, 2))
+        boids.push(new Boid([canvas.width*Math.random(), canvas.height*Math.random()], normalize(Math.random()-.5, Math.random()-.5), 500, 5))
     }
     // start animation
-    start(ctx, boids)
+    const pointerPos = [-2, -2]
+    this.mouseOn = false;
+    updatePointerPos = (e) => 
+    {
+        if (this.mouseOn)
+        {
+            pointerPos[0] = e.pageX - canvas.offsetLeft
+            pointerPos[1] = e.offsetY - canvas.offsetTop
+            this.mouseOn = true
+        }
+        else
+        {
+            pointerPos[0] -2
+            pointerPos[1] = -2
+        }
+    }
+    window.addEventListener('pointermove', updatePointerPos);
+    window.addEventListener('pointerleave', e=>
+    {
+        this.mouseOn = false;
+    })
+    window.addEventListener('pointercancel', e=>
+    {
+        this.mouseOn = false;
+        updatePointerPos(e)
+    })
+    window.addEventListener('pointerup', e=>
+    {
+        this.mouseOn = false;
+        updatePointerPos(e)
+    })
+    window.addEventListener('pointerdown', e=>
+    {
+        this.mouseOn = true;
+        updatePointerPos(e)
+    })
+    window.addEventListener('pointerout', e=>
+    {
+        this.mouseOn = false;
+        updatePointerPos(e)
+    })
+    start(ctx, boids, pointerPos)
+    
 })
-async function start(ctx, boids) {
+
+
+
+async function start(ctx, boids, pointerPos) {
     // clear canvas
-    let prevTime = 0;
-    let boidsXSorted = boids.slice()
-    let glHandler = await initComputeWebgl(boids)
+    let boidsXSorted = boids
+    let glHandler = await initComputeWebgl(boids, pointerPos)
+    let timeLastAdded = performance.now()
+    let prevTime = performance.now();
+    let time10LastAdded = prevTime;
     function perFrame(time)
     {
-        insertSortX(boidsXSorted)
-        let dt = (time - prevTime) / 1000
+        dt = (time - prevTime) / 1000
         prevTime = time
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
         // draw boids
-        let newDirections = glHandler.getNextFrame(boidsXSorted)
-        console.log(newDirections)
+        let newDirections = glHandler.getNextFrame(boidsXSorted, pointerPos)
         for (var i = 0; i<boidsXSorted.length; i++)
         {
             boidsXSorted[i].direction = newDirections.slice(i*2, i*2+2)
         }
         for (let i = 0; i < boids.length; i++) {
             
-            boidsXSorted[i].draw(ctx)
             boidsXSorted[i].update(ctx)
+            boidsXSorted[i].draw(ctx)
+        }
+        if (boidsXSorted.length < 9990)
+        {
+            if (dt>1/55)
+            {
+                time10LastAdded = performance.now()
+                for (var i = 0; i<10; i++)
+                {
+                    boidsXSorted.pop();
+                }
+            }
+            if (dt < 1/60 && (time - time10LastAdded) > 50)
+            {
+                time10LastAdded = performance.now()
+                for (var i = 0; i<10; i++)
+                {
+                    boidsXSorted.push(new Boid([Math.random()*ctx.canvas.width, Math.random()*ctx.canvas.height], normalize(Math.random()-.5, Math.random()-.5), 500, 5))
+                }
+                glHandler.updateBoidCt(boidsXSorted)
+            }
         }
         // request new frame
         requestAnimationFrame(perFrame)
@@ -76,26 +141,32 @@ function Boid(pos, direction, speed, radius) {
     this.coord = new Uint32Array(2)
 }
 Boid.prototype.draw = function(ctx) {
+    // TODO: Render direction to framebuffer and then use direction in another gpgpu calc to 
+    // get the positions of the boids, and then draw them properly with WebGL - takes a lot of time
+    // to getPixels and then draw them in javascipt, better to do almost all of it on gpu
     const t = this;
+    const size = t.radius* Math.max(ctx.canvas.width, ctx.canvas.height) / boidCt
     function drawTrail()
     {
         ctx.beginPath()
         ctx.moveTo(t.pos[0], t.pos[1])
-        ctx.lineTo(t.pos[0] - t.direction[0]*t.radius*25, t.pos[1]  - t.direction[1]*t.radius*25)
+        ctx.lineTo(t.pos[0] - t.direction[0]*size*2, t.pos[1]  - t.direction[1]*size*2)
         ctx.strokeStyle = '#8334eb'
-        ctx.lineWidth = t.radius*2
+        ctx.lineWidth = size
         ctx.stroke()
     }
-    function drawCircle()
+    function drawHead()
     {
         
         ctx.beginPath()
-        ctx.arc(t.pos[0], t.pos[1], t.radius, 0, 2 * Math.PI)
-        ctx.fillStyle = '#fff'
-        ctx.fill()
+        ctx.moveTo(t.pos[0], t.pos[1])
+        ctx.lineTo(t.pos[0] - t.direction[0]*t.radius*4, t.pos[1]  - t.direction[1]*t.radius*4)
+        ctx.strokeStyle = '#FFF'
+        ctx.lineWidth = t.radius*2
+        ctx.stroke()
     }
     drawTrail()
-    drawCircle()
+    // drawHead()
 }
 Boid.prototype.update = function(ctx)
 {
@@ -133,6 +204,7 @@ Boid.prototype.update = function(ctx)
 function insertSortX(boidsByX)
 {
     // sort by x
+    // const startTime = performance.now()
     for (let i = 1; i < boidsByX.length; i++) {
         let j = i
         while (j > 0 && boidsByX[j-1].pos[0] > boidsByX[j].pos[0]) {
@@ -142,12 +214,13 @@ function insertSortX(boidsByX)
             j--
         }
     }
+    // console.log(`insert sort x took ${performance.now() - startTime}`)
 }
 
 
 
 // compute shader def for boids
-async function initComputeWebgl(boids)
+async function initComputeWebgl(boids, pointerPos)
 {
     const vs = `
     attribute vec4 position;
@@ -202,6 +275,8 @@ async function initComputeWebgl(boids)
     const alignmentLoc = gl.getUniformLocation(program, 'alignment');
     const cohesionLoc = gl.getUniformLocation(program, 'cohesion');
     const stubbornnessLoc = gl.getUniformLocation(program, 'stubbornness');
+    const pointerPosLoc = gl.getUniformLocation(program, 'pointerPos');
+    const pointerAttractionLoc = gl.getUniformLocation(program, 'pointerAttraction');
     
     // setup a full canvas clip space quad
     const buffer = gl.createBuffer();
@@ -252,12 +327,14 @@ async function initComputeWebgl(boids)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     
     gl.useProgram(program);
-    gl.uniform1i(srcTexLoc, 0);  // tell the shader the src texture is on texture unit 0
+    gl.uniform1i(srcTexLoc, 0.8);  // tell the shader the src texture is on texture unit 0
     gl.uniform2f(srcDimensionsLoc, srcWidth, srcHeight);
-    gl.uniform1f(separationLoc, .8);
+    gl.uniform1f(separationLoc, 0.8);
     gl.uniform1f(alignmentLoc, 0.1);
-    gl.uniform1f(cohesionLoc, 0.000005);
-    gl.uniform1f(stubbornnessLoc, .6);
+    gl.uniform1f(cohesionLoc, 0.0000005);
+    gl.uniform1f(stubbornnessLoc, .1);
+    gl.uniform1f(pointerAttractionLoc, .05);
+    gl.uniform2f(pointerPosLoc, pointerPos[0], pointerPos[1]);
     gl.drawArrays(gl.TRIANGLES, 0, 6);  // draw 2 triangles (6 vertices)
     
     // get the result
@@ -268,7 +345,7 @@ async function initComputeWebgl(boids)
     
     // print the results
     let out = function() {};
-    out.getNextFrame = (boids) =>
+    out.getNextFrame = (boids, pointerPos) =>
     {
         // gl.bindTexture(gl.TEXTURE_2D, tex);
         // gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1); // see https://webglfundamentals.org/webgl/lessons/webgl-data-textures.html
@@ -283,6 +360,7 @@ async function initComputeWebgl(boids)
             gl.FLOAT,         // type
             new Float32Array(boids.map(e => [...e.pos, ...e.direction]).flat())
         )
+        gl.uniform2f(pointerPosLoc, pointerPos[0], pointerPos[1]);
         gl.drawArrays(gl.TRIANGLES, 0, 6);  // draw 2 triangles (6 vertices)
         // get the result
         const results = new Uint8Array(dstWidth * dstHeight * 4); // 4 because rgba
@@ -294,13 +372,16 @@ async function initComputeWebgl(boids)
     }
     out.updateBoidCt = (boids)=>
     {
+        boidCt = boids.length;
+        console.log(boids.length)
         if (boids.length<10000)
         {
-            boids.push(new Boid([canvas.width*Math.random(), canvas.height*Math.random()], normalize(0, 1), 10, 5))
             srcHeight = boids.length;
             dstHeight = boids.length;
             canvas.height = boids.length;
             gl.uniform2f(srcDimensionsLoc, srcWidth, srcHeight);
+            gl.uniform1f(separationLoc, 0.8+5*boids.length/10000);
+            gl.uniform1f(pointerAttractionLoc, .05+.2*boids.length/10000);
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         }
         else
