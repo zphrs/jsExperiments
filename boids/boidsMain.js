@@ -181,7 +181,7 @@ Boid.prototype.update = function(ctx)
         }
         return [direction[0]/length, direction[1]/length]
     }
-    this.pos = this.pos.map((x, i) => x+this.direction[i]*this.speed*(1/60))
+    this.pos = this.pos.map((x, i) => x+this.direction[i]*this.speed*(1/60)*Math.min(ctx.canvas.width,ctx.canvas.height)/1000)
     if (this.pos[0] > ctx.canvas.width)
     {
         this.pos[0] -= ctx.canvas.width
