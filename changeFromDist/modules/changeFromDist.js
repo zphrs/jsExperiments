@@ -12,7 +12,8 @@ export default function changeFromDist(elemToChange, mousePos, changeFunct)
 {
 	const parent = elemToChange.parentElement
     let parentPosOnDocument = {x: parent.getBoundingClientRect().left + document.documentElement.scrollLeft, y: parent.getBoundingClientRect().top + document.documentElement.scrollTop};
-	mousePos = {x:mousePos.x - parentPosOnDocument.x, y: mousePos.y - parentPosOnDocument.y};
+	// mousePos = {x:mousePos.x - parentPosOnDocument.x, y: mousePos.y - parentPosOnDocument.y};
+	mousePos = mousePos.map((pos) => {return {x:pos.x - parentPosOnDocument.x, y: pos.y - parentPosOnDocument.y}})
 	parent.style.position = 'relative'
 	function getDist(x, y)
 	{

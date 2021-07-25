@@ -21,6 +21,10 @@ export default function changeFromDistVis(elemToChange, mousePos, changeFunct) {
     // listen to resize events
     function drawVis()
     {
+        const parent = elemToChange.parentElement
+        let parentPosOnDocument = {x: parent.getBoundingClientRect().left + document.documentElement.scrollLeft, y: parent.getBoundingClientRect().top + document.documentElement.scrollTop};
+        // mousePos = {x:mousePos.x - parentPosOnDocument.x, y: mousePos.y - parentPosOnDocument.y};
+        mousePos = {x:mousePos.x - parentPosOnDocument.x, y: mousePos.y - parentPosOnDocument.y}
         // draw line from mousePos to elemToChange center
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = Math.max(Math.min(elemToChange.clientHeight, elemToChange.clientWidth) / 50, 1);
