@@ -14,7 +14,7 @@ window.addEventListener('load', function() {
         // set canvas to 100% of the window
         canvas.width = window.innerWidth
         canvas.height = window.innerHeight
-        canvas.style.position = 'absolute'
+        canvas.style.position = 'fixed'
         canvas.style.top = 0
         canvas.style.left = 0
         canvas.style.zIndex = 0
@@ -282,9 +282,20 @@ async function initComputeWebgl(boids, pointerPos)
     let dstHeight = boidCt;
     
     // make a canvas to return the new vector with 
+    const canvasContainer = document.createElement('div')
     const canvas = document.createElement('canvas');
     canvas.width = dstWidth;
     canvas.height = dstHeight;
+    canvasContainer.appendChild(canvas);
+    document.body.appendChild(canvasContainer);
+    canvas.style.height = 20*boidCt + 'px';
+    canvas.style.width = '50%';
+    canvas.style.boxSizing = 'border-box';
+    canvasContainer.className = 'glass';
+    canvas.style.position = 'absolute';
+    canvasContainer.style.height = 21*boidCt + 'px';
+    canvasContainer.style.boxSizing = 'border-box';
+
     
     const gl = canvas.getContext('webgl');
     function createShader(gl, type, source) {
