@@ -2,10 +2,11 @@ html {
 	font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 	background-color: rgb(32, 32, 32);
 	touch-action: none;
-
+	height: 100%;
 }
 body {
 	overflow: hidden;
+	height: 100%;
 }
 canvas {
 	z-index: -1;
@@ -15,8 +16,9 @@ canvas {
 	padding: 10px;
 	z-index: 10;
 	border-radius: 5px;
-	background-color: #3C186B88;
+	background-color: hsla(266, 63%, 26%, .7);
 	color: hsl(266, 100%, 85%);
 	backdrop-filter: blur(10px);
 	-webkit-backdrop-filter: blur(10px);
+	height: 50%;
 }

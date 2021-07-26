@@ -49,18 +49,18 @@ window.addEventListener('load', function() {
     let turnOff = undefined
     updatePointerPos = (e) => 
     {
+        pointerPos[0] = e.pageX - canvas.offsetLeft
+        pointerPos[1] = e.offsetY - canvas.offsetTop
         if (this.mouseOn)
         {
-            pointerPos[0] = e.pageX - canvas.offsetLeft
-            pointerPos[1] = e.offsetY - canvas.offsetTop
             this.mouseOn = true
             window.clearTimeout(turnOff)
         }
         else
         {
             turnOff = window.setTimeout(() => {
-                pointerPos[0] -2
-                pointerPos[1] = -2
+                // pointerPos[0] -2
+                // pointerPos[1] = -2
             }, Math.max(onAt - performance.now() + 1000), 0)
         }
     }
@@ -126,7 +126,7 @@ async function start(ctx, boids, pointerPos) {
                 timeRemovedAt = time
                 for (var i = 0; i<2; i++)
                 {
-                    boidsXSorted.pop();
+                    // boidsXSorted.pop();
                 }
                 glHandler.updateBoidCt(boidsXSorted)
             }
@@ -381,7 +381,7 @@ async function initComputeWebgl(boids, pointerPos)
         gl.uniform1f(separationLoc, 1*1000/Math.min(canvas.width, canvas.height));
         gl.uniform1f(alignmentLoc, 0.05*1000/Math.min(canvas.width, canvas.height));
         gl.uniform1f(cohesionLoc, 0.000005*1000/Math.min(canvas.width, canvas.height));
-        gl.uniform1f(stubbornnessLoc, 1000*Math.min(canvas.width, canvas.height));
+        gl.uniform1f(stubbornnessLoc, 500*Math.min(canvas.width, canvas.height));
         gl.uniform1f(pointerAttractionLoc, .1*1000/Math.min(canvas.width, canvas.height));
     }
     updateWeights();
