@@ -200,6 +200,7 @@ Boid.prototype.draw = function(ctx) {
         ctx.lineTo(t.pos[0] - t.direction[0]*size*1.5, t.pos[1]  - t.direction[1]*size*1.5)
         ctx.strokeStyle = '#8334eb'
         ctx.lineWidth = size
+        ctx.closePath()
         ctx.stroke()
     }
     function drawHead()
@@ -210,10 +211,11 @@ Boid.prototype.draw = function(ctx) {
         ctx.lineTo(t.pos[0] - t.direction[0]*size, t.pos[1]  - t.direction[1]*size)
         ctx.strokeStyle = '#AD7CEE'
         ctx.lineWidth = size
+        ctx.closePath()
         ctx.stroke()
     }
     drawTrail()
-    drawHead()
+    // drawHead()
 }
 Boid.prototype.update = function(ctx)
 {
