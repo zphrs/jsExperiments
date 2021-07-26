@@ -192,6 +192,12 @@ Boid.prototype.draw = function(ctx) {
     // get the positions of the boids, and then draw them properly with WebGL - takes a lot of time
     // to getPixels and then draw them in javascipt, better to do almost all of it on gpu
     const t = this;
+    if (t.pos[0] === undefined || t.pos[1] === undefined) {
+        console.log('frick')
+        t.pos[0] = 0
+        t.pos[1] = 0
+        return;
+    }
     const size = Math.max(t.radius* Math.max(ctx.canvas.width, ctx.canvas.height) / boidCt, 5)
     function drawTrail()
     {
@@ -200,7 +206,6 @@ Boid.prototype.draw = function(ctx) {
         ctx.lineTo(t.pos[0] - t.direction[0]*size*1.5, t.pos[1]  - t.direction[1]*size*1.5)
         ctx.strokeStyle = '#8334eb'
         ctx.lineWidth = size
-        ctx.closePath()
         ctx.stroke()
     }
     function drawHead()
@@ -211,7 +216,6 @@ Boid.prototype.draw = function(ctx) {
         ctx.lineTo(t.pos[0] - t.direction[0]*size, t.pos[1]  - t.direction[1]*size)
         ctx.strokeStyle = '#AD7CEE'
         ctx.lineWidth = size
-        ctx.closePath()
         ctx.stroke()
     }
     drawTrail()
