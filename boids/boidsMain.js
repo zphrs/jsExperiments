@@ -112,7 +112,13 @@ async function start(ctx, boids, pointerPos) {
         let newDirections = glHandler.getNextFrame(boidsXSorted, pointerPos)
         for (var i = 0; i<boidsXSorted.length; i++)
         {
-            boidsXSorted[i].direction = newDirections.slice(i*2, i*2+2)
+            const newDir = newDirections.slice(i*2, i*2+2);
+            if (Number.isNaN(newDir[0]) || Number.isNaN(newDir[1]))
+            {
+                console.log('frick out of the gpgpu calc')
+                continue;
+            }
+            boidsXSorted[i].direction = newDir
         }
         for (let i = 0; i < boids.length; i++) {
             
@@ -192,7 +198,7 @@ Boid.prototype.draw = function(ctx) {
     // get the positions of the boids, and then draw them properly with WebGL - takes a lot of time
     // to getPixels and then draw them in javascipt, better to do almost all of it on gpu
     const t = this;
-    if (t.pos[0] === undefined || t.pos[1] === undefined) {
+    if (Number.isNaN(t.pos[0]) || Number.isNaN(t.pos[1])) {
         console.log('frick')
         t.pos[0] = 0
         t.pos[1] = 0
@@ -223,16 +229,28 @@ Boid.prototype.draw = function(ctx) {
 }
 Boid.prototype.update = function(ctx)
 {
+    if (Number.isNaN(this.direction[0]) || Number.isNaN(this.direction[1])) {
+        console.log('frick for direction before norming')
+        this.direction[0] = 0
+        this.direction[1] = 1
+        // return;
+    }
     this.direction = normalize(this.direction).map(e=>e+Math.random()*0.01-0.005)
     function normalize(direction)
     {
         let length = Math.sqrt(direction[0]*direction[0] + direction[1]*direction[1])
-        if (length == 0)
+        if (length === 0 || !Number.isFinite(length))
         {
             console.log('direction is 0, 0')
             return [0, 1]
         }
         return [direction[0]/length, direction[1]/length]
+    }
+    if (Number.isNaN(this.direction[0]) || Number.isNaN(this.direction[1])) {
+        console.log('frick for direction')
+        this.direction[0] = 0
+        this.direction[1] = 1
+        return;
     }
     this.pos = this.pos.map((x, i) => x+this.direction[i]*this.speed*(1/60)*Math.min(ctx.canvas.width,ctx.canvas.height)/2000)
     if (this.pos[0] > ctx.canvas.width)
