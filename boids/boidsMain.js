@@ -1,3 +1,22 @@
+/*
+TODO:
+- Clean up this garbage pile of code to encapsulate it into a module/easy to use API
+- Remove unused code chunks.
+- Expose the various boid factors in the encapsulation with some sort of api
+- expose the MAX_BOIDS constant as well and generate the glsl file dynamically.
+- Add the maxNeighborDistance and the maxCloseness as uniforms in the glsl file
+- Display a count of the boids
+- Display the frame rate
+WISH LIST:
+- Render with the GPU instead of JS canvas, you can use FrameBuffers to pass the data from one GPU canvas to another
+- Make it 3D 
+- Add vis to mouse position
+- Add a way to adjust the parameters of the boids - use JS + some sort of slider
+- add keyboard controls to drag the boids around
+- make boids dodge the walls of the canvas
+- make boids look like fish or birds
+*/
+
 let boidCt = 200;
 let minBoidCt = 200;
 function normalize(...args) {
@@ -44,50 +63,54 @@ window.addEventListener('load', function() {
     }
     // start animation
     const pointerPos = [-2, -2]
-    this.mouseOn = false;
+    let mouseOn = false;
     let onAt = 0;
     let turnOff = undefined
     updatePointerPos = (e) => 
     {
-        pointerPos[0] = e.pageX - canvas.offsetLeft
-        pointerPos[1] = e.offsetY - canvas.offsetTop
-        if (this.mouseOn)
+        console.log(mouseOn)
+        if (mouseOn)
         {
-            this.mouseOn = true
+            if (window.getComputedStyle(canvas).position === 'fixed')
+            {
+                pointerPos[0] = e.clientX
+                pointerPos[1] = e.clientY
+            }
+            else   
+            {
+                pointerPos[0] = e.pageX - canvas.offsetLeft
+                pointerPos[1] = e.pageY - canvas.offsetTop
+            }
             window.clearTimeout(turnOff)
         }
         else
         {
             turnOff = window.setTimeout(() => {
-                // pointerPos[0] -2
-                // pointerPos[1] = -2
-            }, Math.max(onAt - performance.now() + 1000), 0)
+                pointerPos[0] -2
+                pointerPos[1] = -2
+            }, Math.max(1000 - (performance.now() - onAt)), 0)
         }
     }
     window.addEventListener('pointermove', updatePointerPos);
     window.addEventListener('pointerleave', e=>
     {
-        this.mouseOn = false;
+        mouseOn = false;
+        updatePointerPos(e)
     })
     window.addEventListener('pointercancel', e=>
     {
-        this.mouseOn = false;
+        mouseOn = false;
         updatePointerPos(e)
     })
     window.addEventListener('pointerup', e=>
     {
-        this.mouseOn = false;
+        mouseOn = false;
         updatePointerPos(e)
     })
     window.addEventListener('pointerdown', e=>
     {
-        this.mouseOn = true;
+        mouseOn = true;
         onAt = performance.now()
-        updatePointerPos(e)
-    })
-    window.addEventListener('pointerout', e=>
-    {
-        this.mouseOn = false;
         updatePointerPos(e)
     })
     start(ctx, boids, pointerPos)
@@ -113,7 +136,7 @@ async function start(ctx, boids, pointerPos) {
         for (var i = 0; i<boidsXSorted.length; i++)
         {
             const newDir = newDirections.slice(i*2, i*2+2);
-            if (Number.isNaN(newDir[0]) || Number.isNaN(newDir[1]))
+            if (Number.isNaN(newDir[0]) || Number.isNaN(newDir[1]) || !Number.isFinite(newDir[0]) || !Number.isFinite(newDir[1]))
             {
                 console.log('frick out of the gpgpu calc')
                 continue;
@@ -225,7 +248,7 @@ Boid.prototype.draw = function(ctx) {
         ctx.stroke()
     }
     drawTrail()
-    // drawHead()
+    drawHead()
 }
 Boid.prototype.update = function(ctx)
 {
@@ -312,12 +335,13 @@ async function initComputeWebgl(boids, pointerPos)
     canvas.height = dstHeight;
     canvasContainer.appendChild(canvas);
     document.body.appendChild(canvasContainer);
-    canvas.style.height = 20*boidCt + 'px';
-    canvas.style.width = '50%';
+    canvas.style.height = 'calc(100% - 20px)';
+    canvas.style.width = 'calc(100% - 20px)';
     canvas.style.boxSizing = 'border-box';
     canvasContainer.className = 'glass';
     canvas.style.position = 'absolute';
-    canvasContainer.style.height = 21*boidCt + 'px';
+    canvas.style.filter = 'opacity(.25)';
+    canvasContainer.style.height = 100 + '%';
     canvasContainer.style.boxSizing = 'border-box';
 
     
@@ -413,10 +437,10 @@ async function initComputeWebgl(boids, pointerPos)
     gl.uniform2f(srcDimensionsLoc, srcWidth, srcHeight);
     function updateWeights()
     {
-        gl.uniform1f(separationLoc, 1*1000/Math.min(canvas.width, canvas.height));
-        gl.uniform1f(alignmentLoc, 0.05*1000/Math.min(canvas.width, canvas.height));
-        gl.uniform1f(cohesionLoc, 0.000005*1000/Math.min(canvas.width, canvas.height));
-        gl.uniform1f(stubbornnessLoc, 500*Math.min(canvas.width, canvas.height));
+        gl.uniform1f(separationLoc, 2*1000/Math.min(canvas.width, canvas.height));
+        gl.uniform1f(alignmentLoc, 0.1*1000/Math.min(canvas.width, canvas.height));
+        gl.uniform1f(cohesionLoc, 0.00005*1000/Math.min(canvas.width, canvas.height));
+        gl.uniform1f(stubbornnessLoc, 200*Math.min(canvas.width, canvas.height));
         gl.uniform1f(pointerAttractionLoc, .1*1000/Math.min(canvas.width, canvas.height));
     }
     updateWeights();

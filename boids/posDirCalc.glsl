@@ -1,4 +1,4 @@
-precision mediump float;
+precision highp float;
 
 
 
@@ -157,8 +157,8 @@ void main() {
         if (pointerPos.x >= 0.0 && pointerPos.y >= 0.0) {
             value += getXorY(normalize(pointerPos - myPos), x)*pointerAttraction;
             float dist = distance(myPos, pointerPos);
-            value += getXorY(normalize(myPos - pointerPos), x)/dist*(separation+pointerAttraction);
-            value += sumOfRepulsiveForces*separation;
+            value += getXorY(normalize(myPos - pointerPos), x)/dist*(separation+pointerAttraction+1.0);
+            value += sumOfRepulsiveForces*pointerAttraction;
         }
         if (value == 0.0) {
             value = getXorY(myDir, x);

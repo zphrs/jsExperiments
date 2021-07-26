@@ -17,12 +17,15 @@ canvas {
 	z-index: -1;
 }
 .glass {
-	margin: max(10px, 20%);
+	margin: max(10px, 10%);
 	padding: 10px;
 	z-index: 10;
-	border-radius: 5px;
-	background-color: hsla(266, 63%, 26%, .2);
+	border-radius: 10px;
+	background-color: hsla(266, 63%, 26%, .5);
 	color: hsl(266, 100%, 85%);
 	backdrop-filter: blur(2px);
 	-webkit-backdrop-filter: blur(2px);
+}
+#firstbox {
+	margin-top: 80vh;
 }
