@@ -148,8 +148,14 @@ class BubbleElem extends HTMLElement {
                 }, cssTimeToMs(t.getTransitionSpeed()))
             }
             this.addEventListener('mouseleave', hide)
-            this.addEventListener('focusin', show)
-            this.addEventListener('focusout', hide)
+            this.addEventListener('focusin', (e)=>{
+                console.log(e.target.offsetLeft)
+                show({offsetX: e.target.offsetLeft+e.target.clientWidth/2, offsetY: e.target.offsetTop+e.target.clientHeight/2})
+            })
+            this.addEventListener('focusout', (e)=>{
+                console.log(e.target.offsetLeft)
+                hide({offsetX: e.target.offsetLeft+e.target.clientWidth/2, offsetY: e.target.offsetTop+e.target.clientHeight/2})
+            })
         }
         if (!this.innerHTML)
 		{
