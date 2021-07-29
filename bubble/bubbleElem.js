@@ -135,7 +135,6 @@ class BubbleElem extends HTMLElement {
             }
             this.onclick = ()=>{}; // need empty function for mobile safari to register mouse events
             this.addEventListener('mouseenter', show)
-            
             function hide(e)
             {
                 const clamp = (min, val, max)=>{
@@ -149,6 +148,8 @@ class BubbleElem extends HTMLElement {
                 }, cssTimeToMs(t.getTransitionSpeed()))
             }
             this.addEventListener('mouseleave', hide)
+            this.addEventListener('focusin', show)
+            this.addEventListener('focusout', hide)
         }
         if (!this.innerHTML)
 		{
