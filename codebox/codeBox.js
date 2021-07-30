@@ -2,14 +2,23 @@ class CodeBox extends HTMLElement {
     constructor()
     {
         super();
-        const setup = ()=>
+        const setup = async ()=>
         {
-            console.log('here')
             this.classList.add('code-box');
-            this.text = this.innerHTML;
+            this.fileLink = this.getAttribute('file-link');
+            if (this.fileLink !== null)
+            {
+                // get the text from the file
+                const file = await fetch(this.fileLink);
+                this.text = await file.text();
+            }
+            else
+            {
+                this.text = this.getElementsByTagName('script')[0].innerHTML;
+            }
             this.innerHTML = '';
             // make shadowDOM
-            this.root = this
+            this.root = this;
             this.pre = document.createElement('pre');
             this.root.appendChild(this.pre);
             this.code = document.createElement('code');
