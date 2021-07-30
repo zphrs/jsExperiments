@@ -1,3 +1,4 @@
+// https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
 class CodeBox extends HTMLElement {
     constructor()
     {
@@ -14,7 +15,11 @@ class CodeBox extends HTMLElement {
             }
             else
             {
-                this.text = this.getElementsByTagName('script')[0].innerHTML;
+                this.text = this.getElementsByTagName('script')[0]?.innerHTML;
+            }
+            if (this.text === null)
+            {
+                this.text = this.innerHTML;
             }
             this.innerHTML = '';
             // make shadowDOM
