@@ -5,7 +5,7 @@ class CodeBox extends HTMLElement {
         const setup = async ()=>
         {
             this.classList.add('code-box');
-            this.fileLink = this.getAttribute('file-link');
+            this.fileLink = this.getAttribute('src');
             if (this.fileLink !== null)
             {
                 // get the text from the file
