@@ -6,14 +6,15 @@ class CodeBox extends HTMLElement {
         {
             console.log('here')
             this.classList.add('code-box');
-            this.code = this.innerHTML;
+            this.text = this.innerHTML;
+            this.innerHTML = '';
             // make shadowDOM
-            this.root = this.attachShadow({mode: 'open'});
+            this.root = this
             this.pre = document.createElement('pre');
             this.root.appendChild(this.pre);
             this.code = document.createElement('code');
             this.pre.appendChild(this.code);
-            this.code.appendChild(document.createTextNode(this.innerHTML));
+            this.code.appendChild(document.createTextNode(this.text));
             this.pre = this.querySelector('pre');
             this.code = this.querySelector('code');
         }
