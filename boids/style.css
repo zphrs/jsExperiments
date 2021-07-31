@@ -1,7 +1,6 @@
 html {
 	font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 	background-color: rgb(32, 32, 32);
-	touch-action: none;
 	height: 100%;
 }
 body {
@@ -14,6 +13,7 @@ canvas {
 	image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
 	image-rendering: pixelated;                 /* Awesome future-browsers       */
 	-ms-interpolation-mode: nearest-neighbor;   /* IE  */
+	touch-action: none;
 	z-index: -1;
 }
 .glass {
@@ -21,6 +21,7 @@ canvas {
 	padding: 10px;
 	z-index: 10;
 	border-radius: 10px;
+	min-height: 100vh;
 	background-color: hsla(266, 63%, 26%, .5);
 	color: hsl(266, 100%, 85%);
 	backdrop-filter: blur(2px);

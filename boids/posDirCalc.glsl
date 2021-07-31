@@ -1,4 +1,4 @@
-precision highp float;
+precision lowp float;
 
 
 
@@ -65,57 +65,13 @@ void main() {
     vec4 myData = texture2D(boids, vec2(0.5, myCoord.y));
     vec2 myPos = myData.xy;
     vec2 myDir = myData.zw;
-    float sumOfPositions = 0.0;
+    vec2 sumOfPositions = vec2(0.0, 0.0);
     float sumOfDirections = 0.0;
     float sumOfRepulsiveForces = 0.0;
     int neighborCt = 0;
-    float maxNeighborDistance = 50.0;
-    float maxCloseness = 50.0;
     
     //Find the neighbors
     int boidCt = int(srcDimensions.y);
-    int myInd = int(gl_FragCoord.y);
-    vec2 brokeAt = vec2(0.0, 0.0);
-    // for (int loopInd = 1; loopInd<MAX_BOIDS; loopInd++) {
-    //     int i = loopInd+myInd;
-    //     if (i>boidCt) {break;}
-    //     // if (loopInd>20) {break;}
-    //     if (i != myInd) {
-    //         vec4 neighborData = texture2D(boids, vec2(0.5, (float(i)+.5) / srcDimensions.y));
-    //         vec2 neighborPos = neighborData.xy;
-    //         vec2 neighborDir = neighborData.zw;
-    //         // if (myPos.x - neighborPos.x < -maxNeighborDistance) {brokeAt.x=float(i); break;}
-    //         float dist = distance(myPos, neighborPos);
-    //         if (dist < maxNeighborDistance && dist > 0.0) {
-    //             sumOfPositions += getXorY(neighborPos, x)/getXorY(neighborPos - myPos, x);
-    //             sumOfDirections += getXorY(neighborDir, x);
-    //             neighborCt++;
-    //         }
-    //         if (dist < maxCloseness && dist > 0.0) {
-    //             sumOfRepulsiveForces += getXorY(normalize(myPos - neighborPos), x)/dist;
-    //         }
-    //     }
-    // }
-    // for (int loopInd = 1; loopInd<MAX_BOIDS; loopInd++) {
-    //     int i = myInd - loopInd;
-    //     if (i<0) {break;}
-    //     if (loopInd>200) {break;}
-    //     if (i != myInd) {
-    //         vec4 neighborData = texture2D(boids, vec2(0.5, (float(i)-.5) / srcDimensions.y));
-    //         vec2 neighborPos = neighborData.xy;
-    //         vec2 neighborDir = neighborData.zw;
-    //         // if (myPos.x - neighborPos.x > maxNeighborDistance) {brokeAt.y=float(i); break;}
-    //         float dist = distance(myPos, neighborPos);
-    //         if (dist < maxNeighborDistance && dist > 0.0) {
-    //             sumOfPositions += getXorY(neighborPos, x)/getXorY(neighborPos - myPos, x);
-    //             sumOfDirections += getXorY(neighborDir, x);
-    //             neighborCt++;
-    //         }
-    //         if (dist < maxCloseness && dist > 0.0) {
-    //             sumOfRepulsiveForces += getXorY(normalize(myPos - neighborPos), x)/dist;
-    //         }
-    //     }
-    // }
     for (int i = 0; i<MAX_BOIDS; i++) {
         if (i>boidCt) {break;}
         // if (neighborCt>5) {break;}
@@ -125,7 +81,7 @@ void main() {
             vec2 neighborDir = neighborData.zw;
             float dist = distance(myPos, neighborPos);
             if (dist < maxNeighborDistance && dist > 0.0) {
-                sumOfPositions += getXorY(neighborPos, x)/getXorY(neighborPos - myPos, x);
+                sumOfPositions += neighborPos;
                 sumOfDirections += getXorY(neighborDir, x);
                 neighborCt++;
             }
@@ -137,13 +93,12 @@ void main() {
 
     if (neighborCt > 0) {
         float nCt = float(neighborCt);
-        gl_FragColor = encode_float( getXorY(vec2(sumOfPositions, sumOfDirections), x)).abgr;
         sumOfPositions /= nCt;
         sumOfDirections /= nCt;
-        sumOfRepulsiveForces /= nCt;
+        // sumOfRepulsiveForces /= nCt;
         float value = 0.0;
         if (cohesion > 0.0) {
-            value = sumOfPositions*cohesion;
+            value = getXorY(normalize(sumOfPositions-myPos)*cohesion, x);
         }
         if (alignment > 0.0) {
             value += sumOfDirections*alignment;
@@ -157,8 +112,7 @@ void main() {
         if (pointerPos.x >= 0.0 && pointerPos.y >= 0.0) {
             value += getXorY(normalize(pointerPos - myPos), x)*pointerAttraction;
             float dist = distance(myPos, pointerPos);
-            value += getXorY(normalize(myPos - pointerPos), x)/dist*(separation+pointerAttraction+1.0);
-            value += sumOfRepulsiveForces*pointerAttraction;
+            value += (separation+100.0)*getXorY(normalize(myPos - pointerPos), x)/dist;
         }
         if (value == 0.0) {
             value = getXorY(myDir, x);
@@ -170,5 +124,5 @@ void main() {
     {
         gl_FragColor = encode_float(getXorY(myDir, x)*stubbornness).abgr;
     }
-    // gl_FragColor = encode_float(getXorY(brokeAt, x)).abgr;
+    // gl_FragColor = encode_float(getXorY(vec2(maxNeighborDistance, maxCloseness), x)).abgr;
 }
