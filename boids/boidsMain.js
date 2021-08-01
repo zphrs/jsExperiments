@@ -20,10 +20,28 @@ function normalize(...args) {
     let vecLength = Math.sqrt(args.map(e=>e*e).reduce((a, b) => a + b))
     return args.map((x) => x/vecLength)
 }
+
+/**
+ * @param {HTMLCanvasElement?} canvas canvas element to draw boids to
+ * @param {number} xScreenSizeAtConfig the x size of the screen that you set the weights at
+ * @param {number} yScreenSizeAtConfig the y size of the screen that you set the weights at
+ * @param {number} minBoids minimum number of boids to generate - starting boid count
+ * @param {number} maxBoids maximum number of boids to generate
+ * @param {number} speed speed of the boids
+ * @param {number} radius radius of the boids for drawing
+ * @param {number} separation 
+ * @param {number} alignment
+ * @param {number} cohesion
+ * @param {number} stubbornness
+ * @param {number} pointerAttraction
+ * @param {number} maxNeighborDistance
+ * @param {number} maxCloseness
+ * @param {number} minTouchTime
+ **/
 class BoidManager {
     constructor(
-        canvas=null, 
-        minBoids=100, maxBoids=5000, speed=500, radius = 5,
+        canvas=null, xScreenSizeAtConfig, yScreenSizeAtConfig,
+        minBoids=1, maxBoids=5000, speed=500, radius = .5,
         separation=2, alignment=.2, cohesion=.5, stubbornness=2, pointerAttraction=1,
         maxNeighborDistance=50, maxCloseness=50,
         minTouchTime = 50
@@ -31,20 +49,20 @@ class BoidManager {
     {
         const t = this;
         t.boidCt = minBoids
-        t.minBoidCt = minBoids;
-        t.maxBoids = maxBoids;
+        t._minBoidCt = minBoids;
+        t._maxBoids = maxBoids;
         t.canvas = canvas
-        t.speed = speed
-        t.radius = radius
-        t.separation = separation
-        t.alignment = alignment
-        t.cohesion = cohesion
-        t.stubbornness = stubbornness
-        t.pointerAttraction = pointerAttraction
-        t.maxNeighborDistance = maxNeighborDistance
+        t._speed = speed
+        t._radius = radius
+        t._separation = separation
+        t._alignment = alignment
+        t._cohesion = cohesion
+        t._stubbornness = stubbornness
+        t._pointerAttraction = pointerAttraction
+        t._maxNeighborDistance = maxNeighborDistance
         t.minTouchTime = minTouchTime
-        console.log(t.maxNeighborDistance)
-        t.maxCloseness = maxCloseness
+        console.log(t._maxNeighborDistance)
+        t._maxCloseness = maxCloseness
         if (!t.canvas)
         {
             function mountCanvas()
@@ -64,8 +82,21 @@ class BoidManager {
                 document.body.prepend(canvas)
                 // listen to resize and scale canvas
                 window.addEventListener('resize', function() {
+                    const oldConfigAreaRatio = t.configAreaRatio
                     canvas.width = window.innerWidth
                     canvas.height = window.innerHeight
+                    t.configAreaRatio =  Math.sqrt(t.canvas.width*t.canvas.height/(xScreenSizeAtConfig*yScreenSizeAtConfig))
+                    t.radius *= t.configAreaRatio / oldConfigAreaRatio
+                    t.separation *= t.configAreaRatio / oldConfigAreaRatio
+                    t.alignment *= t.configAreaRatio / oldConfigAreaRatio
+                    t.cohesion *= t.configAreaRatio / oldConfigAreaRatio
+                    t.stubbornness *= t.configAreaRatio / oldConfigAreaRatio
+                    t.pointerAttraction *= t.configAreaRatio / oldConfigAreaRatio
+                    t.maxNeighborDistance *= t.configAreaRatio / oldConfigAreaRatio
+                    t.maxCloseness *= t.configAreaRatio / oldConfigAreaRatio
+                    t.speed *= t.configAreaRatio / oldConfigAreaRatio
+                    t.minBoidCt *= t.configAreaRatio / oldConfigAreaRatio
+                    t.maxBoids *= t.configAreaRatio / oldConfigAreaRatio
                 })
                 canvas.width = window.innerWidth
                 canvas.height = window.innerHeight
@@ -75,14 +106,27 @@ class BoidManager {
         }
         t.canvas.width = t.canvas.scrollWidth
         t.canvas.height = t.canvas.scrollHeight
+        t.configAreaRatio =  t.canvas.width*t.canvas.height/(xScreenSizeAtConfig*yScreenSizeAtConfig)
+
+        t._minBoidCt *= t.configAreaRatio
+        t._maxBoids *= t.configAreaRatio
+        t._speed *= t.configAreaRatio
+        t._radius *= t.configAreaRatio
+        t._separation *= t.configAreaRatio
+        t._alignment *= t.configAreaRatio
+        t._cohesion *= t.configAreaRatio
+        t._stubbornness *= t.configAreaRatio
+        t._pointerAttraction *= t.configAreaRatio
+        t._maxNeighborDistance *= t.configAreaRatio
+        t._maxCloseness *= t.configAreaRatio
         t.ctx = t.canvas.getContext('2d')
         t.boids = []
         for (let i = 0; i < t.boidCt; i++) {
             t.boids.push(new Boid(
                 [t.canvas.width*Math.random(), t.canvas.height*Math.random()], 
                 normalize(Math.random()-.5, Math.random()-.5), 
-                t.speed, 
-                5
+                t._speed, 
+                t.radius
             ))
         }
         const pointerPos = [-1,-1] // needs to be immutable for initComputeWebgl 
@@ -140,8 +184,8 @@ class BoidManager {
         async function start() {
             // clear canvas
             t.glHandler = await initComputeWebgl(t.boids, pointerPos)
-            console.log(t.maxNeighborDistance)
-            t.glHandler.updateWeights(t.separation, t.alignment, t.cohesion, t.stubbornness, t.pointerAttraction, t.maxNeighborDistance, t.maxCloseness)
+            console.log(t._maxNeighborDistance)
+            t.glHandler.updateWeights(t._separation, t._alignment, t._cohesion, t._stubbornness, t._pointerAttraction, t._maxNeighborDistance, t._maxCloseness)
             let prevTime = performance.now();
             let timeRemovedAt = prevTime;
             let time10LastAdded = prevTime;
@@ -167,10 +211,10 @@ class BoidManager {
                     t.boids[i].update(t.ctx)
                     t.boids[i].draw(t.ctx)
                 }
-                if (dt>1/60)
+                if (dt>1/40)
                 {
                     time10LastAdded = performance.now()
-                    if (dt>1/55 && t.boids.length-2 > t.minBoidCt && (time - timeRemovedAt) > 1000) {
+                    if (dt>1/30 && t.boids.length-2 > t._minBoidCt && (time - timeRemovedAt) > 1000) {
                         timeRemovedAt = time
                         for (var i = 0; i<2; i++)
                         {
@@ -179,9 +223,9 @@ class BoidManager {
                         t.glHandler.updateBoidCt(t.boids)
                     }
                 }
-                if (dt < 1/60 && (time - time10LastAdded) > 5*t.boids.length/t.maxBoids && t.boids.length < Math.pow(Math.min(t.canvas.width, t.canvas.height), 2)/(t.radius+t.maxCloseness*10) && t.boids.length < t.maxBoids)
+                if (dt <= 1/45 && (time - time10LastAdded)/1000 > t.boids.length/t._maxBoids && t.boids.length - 8 < t._maxBoids)
                 {
-                    console.log( time - time10LastAdded, t.boids.length/t.maxBoids)
+                    console.log( (time - time10LastAdded)/1000, t.boids.length/t._maxBoids)
                     time10LastAdded = performance.now()
                     console.log(t.boids.length)
                     for (var i = 0; i<8; i++)
@@ -192,32 +236,32 @@ class BoidManager {
                                 t.boids.push(new Boid(
                                     [0, t.canvas.height*Math.random()],
                                     [Math.random()*.5, Math.random()-.5],
-                                    t.speed,
-                                    5
+                                    t._speed,
+                                    t.radius
                                 ))
                                 break;
                             case 1: // enter from right
                                 t.boids.push(new Boid(
                                     [t.canvas.width, t.canvas.height*Math.random()],
                                     [-Math.random()*.5, Math.random()-.5],
-                                    t.speed,
-                                    5
+                                    t._speed,
+                                    t.radius
                                 ))
                                 break;
                             case 2: // enter from top
                                 t.boids.push(new Boid(
                                     [t.canvas.width*Math.random(), 0],
                                     normalize(Math.random()-.5, Math.random()*.5),
-                                    t.speed,
-                                    5
+                                    t._speed,
+                                    t.radius
                                 ))
                                 break;
                             case 3: // enter from bottom
                                 t.boids.push(new Boid(
                                     [t.canvas.width*Math.random(), t.canvas.height],
                                     normalize(Math.random()-.5, -Math.random()*.5),
-                                    t.speed,
-                                    5
+                                    t._speed,
+                                    t.radius
                                 ))
                                 break;
                         }
@@ -230,6 +274,94 @@ class BoidManager {
             requestAnimationFrame(perFrame)
         }
     }
+    set minBoidCt(v) {
+        this._minBoidCt = v
+        while (this._minBoidCt > this.boids.length) {
+            this.boids.push(new Boid(
+                [this.canvas.width*Math.random(), this.canvas.height*Math.random()],
+                normalize(Math.random()-.5, Math.random()*.5),
+                this._speed,
+                this._radius
+            ))
+        }
+    }
+    get minBoidCt() {
+        return this._minBoidCt
+    }
+    set maxBoids(v) {
+        this._maxBoids = v
+        while (this._maxBoids < this.boids.length) {
+            this.boids.pop()
+        }
+    }
+    get maxBoids() {
+        return this._maxBoids
+    }
+    set separation(v) {
+        this._separation = v;
+        this.glHandler.updateSeparation(v);
+    }
+    get separation() {
+        return this._separation;
+    }
+    set alignment(v) {
+        this._alignment = v;
+        this.glHandler.updateAlignment(v);
+    }
+    get alignment() {
+        return this._alignment;
+    }
+    set cohesion(v) {
+        this._cohesion = v;
+        this.glHandler.updateCohesion(v);
+    }
+    get cohesion() {
+        return this._cohesion;
+    }
+    set stubbornness(v) {
+        this._stubbornness = v;
+        this.glHandler.updateStubbornness(v);
+    }
+    get stubbornness() {
+        return this._stubbornness;
+    }
+    set pointerAttraction(v) {
+        this._pointerAttraction = v;
+        this.glHandler.updatePointerAttraction(v);
+    }
+    get pointerAttraction() {
+        return this._pointerAttraction;
+    }
+    set maxNeighborDistance(v) {
+        this._maxNeighborDistance = v;
+        this.glHandler.updateMaxNeighborDistance(v);
+    }
+    get maxNeighborDistance() {
+        return this._maxNeighborDistance;
+    }
+    set maxCloseness(v) {
+        this._maxCloseness = v;
+        this.glHandler.updateMaxCloseness(v);
+    }
+    get maxCloseness() {
+        return this._maxCloseness;
+    }
+    set speed(v) {
+        this._speed = v;
+        console.log('here')
+        this.boids.forEach(b => b.speed = v);
+    }
+    get speed() {
+        return this._speed;
+    }
+    set radius(v) {
+        this._radius = v;
+        this.boids.forEach(b => b.radius = v);
+    }
+    get radius() {
+        return this._radius;
+    }
+
 }
 
 
@@ -252,12 +384,13 @@ Boid.prototype.draw = function(ctx) {
         t.pos[1] = 0
         return;
     }
-    const size = Math.max(t.radius, 5)
+    const size = Math.max(t.radius, 1)
     function drawTrail()
     {
         ctx.beginPath()
         ctx.moveTo(t.pos[0], t.pos[1])
         ctx.lineTo(t.pos[0] - t.direction[0]*size*1.5, t.pos[1]  - t.direction[1]*size*1.5)
+        // ctx.strokeStyle = '#FFF'
         ctx.strokeStyle = '#8334eb'
         ctx.lineWidth = size
         ctx.stroke()
@@ -269,11 +402,12 @@ Boid.prototype.draw = function(ctx) {
         ctx.moveTo(t.pos[0], t.pos[1])
         ctx.lineTo(t.pos[0] - t.direction[0]*size, t.pos[1]  - t.direction[1]*size)
         ctx.strokeStyle = '#AD7CEE'
+        // ctx.strokeStyle = '#FFF'
         ctx.lineWidth = size
         ctx.stroke()
     }
     drawTrail()
-    drawHead()
+    // drawHead()
 }
 Boid.prototype.update = function(ctx)
 {
@@ -448,18 +582,39 @@ async function initComputeWebgl(boids, pointerPos)
     gl.useProgram(program);
     gl.uniform1i(srcTexLoc, 0);  // tell the shader the src texture is on texture unit 0
     gl.uniform2f(srcDimensionsLoc, srcWidth, srcHeight);
-    function updateWeights(separation, alignment, cohesion, stubbornness, pointerAttraction, maxNeighborDistance, maxCloseness)
-    {
+    let out = function() {};
+    out.updateSeparation = (v) => {
+        gl.uniform1f(separationLoc, v);
+    };
+    out.updateAlignment = (v) => {
+        gl.uniform1f(alignmentLoc, v);
+    };
+    out.updateCohesion = (v) => {
+        gl.uniform1f(cohesionLoc, v);
+    };
+    out.updateStubbornness = (v) => {
+        gl.uniform1f(stubbornnessLoc, v);
+    };
+    out.updatePointerAttraction = (v) => {
+        gl.uniform1f(pointerAttractionLoc, v);
+    };
+    out.updateMaxNeighborDistance = (v) => {
+        gl.uniform1f(maxHeighborDistanceLoc, v);
+    };
+    out.updateMaxCloseness = (v) => {
+        gl.uniform1f(maxClosenessLoc, v);
+    };
+    out.updateWeights = (separation, alignment, cohesion, stubbornness, pointerAttraction, maxNeighborDistance, maxCloseness) => {
         console.log(separation, alignment, cohesion, stubbornness, pointerAttraction, maxNeighborDistance, maxCloseness);
-        gl.uniform1f(separationLoc, separation);
-        gl.uniform1f(alignmentLoc, alignment);
-        gl.uniform1f(cohesionLoc, cohesion);
-        gl.uniform1f(stubbornnessLoc, stubbornness);
-        gl.uniform1f(pointerAttractionLoc, pointerAttraction);
-        gl.uniform1f(maxHeighborDistanceLoc, maxNeighborDistance);
-        gl.uniform1f(maxClosenessLoc, maxCloseness);
+        out.updateSeparation(separation);
+        out.updateAlignment(alignment);
+        out.updateCohesion(cohesion);
+        out.updateStubbornness(stubbornness);
+        out.updatePointerAttraction(pointerAttraction);
+        out.updateMaxNeighborDistance(maxNeighborDistance);
+        out.updateMaxCloseness(maxCloseness);
     }
-    updateWeights(0, 0, 0, 0, 0, 0);
+    out.updateWeights(0, 0, 0, 0, 0, 0);
     gl.uniform2f(pointerPosLoc, pointerPos[0], pointerPos[1]);
     gl.drawArrays(gl.TRIANGLES, 0, 6);  // draw 2 triangles (6 vertices)
     
@@ -470,7 +625,6 @@ async function initComputeWebgl(boids, pointerPos)
     const result = new Float32Array(results.buffer);
     
     // print the results
-    let out = function() {};
     let boidCt = boids.length;
     out.getNextFrame = (boids, pointerPos) =>
     {
@@ -517,7 +671,6 @@ async function initComputeWebgl(boids, pointerPos)
             throw "boid count too high"
         }
     }
-    out.updateWeights = updateWeights;
     return out;
 }
-
+export default BoidManager;

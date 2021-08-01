@@ -86,7 +86,7 @@ void main() {
                 neighborCt++;
             }
             if (dist < maxCloseness && dist > 0.0) {
-                sumOfRepulsiveForces += getXorY(normalize(myPos - neighborPos), x)/dist;
+                sumOfRepulsiveForces += maxCloseness*getXorY(normalize(myPos - neighborPos), x)/dist;
             }
         }
     }
@@ -112,7 +112,7 @@ void main() {
         if (pointerPos.x >= 0.0 && pointerPos.y >= 0.0) {
             value += getXorY(normalize(pointerPos - myPos), x)*pointerAttraction;
             float dist = distance(myPos, pointerPos);
-            value += (separation+100.0)*getXorY(normalize(myPos - pointerPos), x)/dist;
+            value += 20.0*maxCloseness*separation*(getXorY(normalize(myPos - pointerPos), x)/dist);
         }
         if (value == 0.0) {
             value = getXorY(myDir, x);
