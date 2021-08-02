@@ -663,7 +663,6 @@ async function initComputeWebgl(boids, pointerPos, shaderMaxBoids)
     out.updateBoidCt = (boids)=>
     {
         boidCt = boids.length;
-        console.log(boids.length)
         if (boids.length<10000)
         {
             srcHeight = boids.length;

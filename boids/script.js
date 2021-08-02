@@ -25,7 +25,8 @@ let bm = new BoidManager(canvas, canvasWidthAtConfig, canvasHeightAtConfig,
     separation, alignment, cohesion, stubbornness, pointerAttraction, 
     maxNeighborDistance, maxCloseness, 
     minTouchTime)
-
+window.bm = bm
+console.log('You can access the BoidManager with the window variable, bm. You can manually set minBoids, maxBoids, speed, pointerAttraction, neighborDistance, and maxCloseness.'
 visCanvas.width = bm.maxNeighborDistance*2.75;
 visCanvas.height = bm.maxNeighborDistance*2.75;
 
