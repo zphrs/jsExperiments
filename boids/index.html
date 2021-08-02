@@ -6,23 +6,32 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="style.css">
 	<script src="script.js" type="module"></script>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
 	<title>Boids</title>
 </head>
 <body>
-	<!-- boidsMain automatically mounts a boids simulation on the page with id of "boids". -->
+	<!-- script.js automatically mounts a boids simulation on the page with id of "boids" via boidsMain's BoidManager class. -->
+	<div id='controls-container'>
+		<form id='controls'>
+			<div class='attribute' id='alignment'>Alignment: <input type="range" name="alignment" id="" value='.8' min=0 max=1 step=.01> <label class="material-icons"><input type="checkbox" name="alignment" id=""><span></span></label></div>
+			<div class='attribute' id='cohesion'>Cohesion: <input type="range" name="cohesion" id="" value='1' min=0 max=1 step=.01> <label class='material-icons'><input type="checkbox" name="cohesion" id=""><span></span></label></div>
+			<div class='attribute' id='separation'>Separation: <input type="range" name="separation" id="" value='.2' min=0 max=1 step=.01> <label class='material-icons'><input type="checkbox" name="separation" id=""><span></span></label> </div>
+		</form>
+		<button id='collapse'><span class="material-icons">expand_less</span></button>
+	</div>
 	<div class='glass' id="firstbox">
 		<h1>Hello!</h1>
 		<h2>Controls</h2>
 		<h3>
 			Click/touch/tap anywhere to feed the boids. You can also click/touch/tap and drag to feed the boids continuously.
-			The boids will move towards where you touch.
+			The boids will move towards whereever you touch.
 		</h3>
 		<h2>About</h2>
 		<p>
 			This is a GPGPU based boids simulation that uses the WebGL 1.0 specification for good cross-browser support.
 			The boids simulation is based on <a href="http://www.red3d.com/cwr/boids/">this paper</a> by Craig Reynolds.
 		</p>
-		<p></p>
 		<p>The image below this big box represents the gpu generated direction for every boid. 
 			As such, it is very flashy since it is recalculating the direction every frame, to 32 bit precision. 
 			<br>That is why this box is so big.

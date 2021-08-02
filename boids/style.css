@@ -5,6 +5,7 @@ html {
 }
 body {
 	height: 100%;
+	margin: 0;
 }
 canvas {
 	image-rendering: optimizeSpeed;             /* Older versions of FF          */
@@ -13,19 +14,103 @@ canvas {
 	image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
 	image-rendering: pixelated;                 /* Awesome future-browsers       */
 	-ms-interpolation-mode: nearest-neighbor;   /* IE  */
-	z-index: -1;
+	z-index: 0;
 }
 .glass {
 	margin: max(10px, 10%);
 	padding: 10px;
 	z-index: 10;
 	border-radius: 10px;
-	min-height: 100vh;
 	background-color: hsla(266, 63%, 26%, .5);
 	color: hsl(266, 100%, 85%);
-	backdrop-filter: blur(2px);
-	-webkit-backdrop-filter: blur(2px);
+	backdrop-filter: blur(0px); /* Thx Safari */
+	-webkit-backdrop-filter: blur(0px);
+}
+#controls-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	width: 100%;
+}
+#controls {
+	position: relative;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	padding: 5px;
+	border-radius: 0 0 10px 0;
+	background-color: hsla(266, 63%, 26%, .5);
+	color: hsl(266, 100%, 85%);
+	display: flex;
+	width: 100%;
+	box-sizing: border-box;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+}
+.attribute {
+	padding: 10px;
+	border-radius: 10px;
+}
+#alignment {
+	background-color: darkblue;
+}
+#cohesion {
+	background-color: darkgreen;
+}
+#separation {
+	background-color: darkred;
+}
+#controls > div {
+	display: flex;
+	flex-direction: row;
+	flex: 1 1 400px;
+	margin: 10px;
+}
+#controls > div input[type="range"] {
+	width: 100%;
+}
+#controls input[type="checkbox"] {
+	display: none;
+}
+#controls span::after {
+	content: "visibility_off";
+}
+#controls input[type="checkbox"]:checked + span::after {
+	content: "visibility";
+}
+#collapse {
+	border: none;
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	width: 44px;
+	height: 44px;
+	font-size: 25px;
+	border-radius: 0 0 10px 10px;
+	background-color: hsla(266, 63%, 26%, .5);
+	color: hsl(266, 100%, 85%);
+}
+
+.visCanvas {
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-color: hsl(135, 70%, 43%, .5);
+	border-radius: 50%;
+	color: hsl(266, 100%, 85%);
+	backdrop-filter: blur(3px); /* Thx Safari */
+	-webkit-backdrop-filter: blur(3px);
+	transition: background-color 0.5s;
 }
 #firstbox {
 	margin-top: 80vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	min-height: 100vh;
+}
+a {
+	color: #AD7CEE;
 }

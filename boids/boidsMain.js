@@ -1,6 +1,5 @@
 /*
 TODO:
-- Clean up this garbage pile of code to encapsulate it into a module/easy to use API
 - Remove unused code chunks.
 - Expose the various boid factors in the encapsulation with some sort of api
 - expose the MAX_BOIDS constant as well and generate the glsl file dynamically.
@@ -40,15 +39,14 @@ function normalize(...args) {
  **/
 class BoidManager {
     constructor(
-        canvas=null, xScreenSizeAtConfig, yScreenSizeAtConfig,
-        minBoids=1, maxBoids=5000, speed=500, radius = .5,
-        separation=2, alignment=.2, cohesion=.5, stubbornness=2, pointerAttraction=1,
+        canvas=null, xScreenSizeAtConfig = 1920, yScreenSizeAtConfig = 1080,
+        minBoids=1, maxBoids=1500, absoluteMaxBoids = 4000, speed=500, radius = 8,
+        separation=.1, alignment=.2, cohesion=.1, stubbornness=2, pointerAttraction=1,
         maxNeighborDistance=50, maxCloseness=50,
         minTouchTime = 50
         ) 
     {
         const t = this;
-        t.boidCt = minBoids
         t._minBoidCt = minBoids;
         t._maxBoids = maxBoids;
         t.canvas = canvas
@@ -61,7 +59,7 @@ class BoidManager {
         t._pointerAttraction = pointerAttraction
         t._maxNeighborDistance = maxNeighborDistance
         t.minTouchTime = minTouchTime
-        console.log(t._maxNeighborDistance)
+        t._absoluteMaxBoids = absoluteMaxBoids
         t._maxCloseness = maxCloseness
         if (!t.canvas)
         {
@@ -76,7 +74,6 @@ class BoidManager {
                 canvas.style.position = 'fixed'
                 canvas.style.top = 0
                 canvas.style.left = 0
-                canvas.style.zIndex = 0
                 canvas.style.touchAction = 'none'
                 // mount canvas
                 document.body.prepend(canvas)
@@ -86,6 +83,7 @@ class BoidManager {
                     canvas.width = window.innerWidth
                     canvas.height = window.innerHeight
                     t.configAreaRatio =  Math.sqrt(t.canvas.width*t.canvas.height/(xScreenSizeAtConfig*yScreenSizeAtConfig))
+                    // t.speed *= t.configAreaRatio / oldConfigAreaRatio
                     t.radius *= t.configAreaRatio / oldConfigAreaRatio
                     t.separation *= t.configAreaRatio / oldConfigAreaRatio
                     t.alignment *= t.configAreaRatio / oldConfigAreaRatio
@@ -94,9 +92,9 @@ class BoidManager {
                     t.pointerAttraction *= t.configAreaRatio / oldConfigAreaRatio
                     t.maxNeighborDistance *= t.configAreaRatio / oldConfigAreaRatio
                     t.maxCloseness *= t.configAreaRatio / oldConfigAreaRatio
-                    t.speed *= t.configAreaRatio / oldConfigAreaRatio
                     t.minBoidCt *= t.configAreaRatio / oldConfigAreaRatio
                     t.maxBoids *= t.configAreaRatio / oldConfigAreaRatio
+                    t.canvas.dispatchEvent(new Event('resize'))
                 })
                 canvas.width = window.innerWidth
                 canvas.height = window.innerHeight
@@ -106,11 +104,11 @@ class BoidManager {
         }
         t.canvas.width = t.canvas.scrollWidth
         t.canvas.height = t.canvas.scrollHeight
-        t.configAreaRatio =  t.canvas.width*t.canvas.height/(xScreenSizeAtConfig*yScreenSizeAtConfig)
+        t.configAreaRatio =  Math.sqrt(t.canvas.width*t.canvas.height/(xScreenSizeAtConfig*yScreenSizeAtConfig))
 
         t._minBoidCt *= t.configAreaRatio
         t._maxBoids *= t.configAreaRatio
-        t._speed *= t.configAreaRatio
+        // t._speed *= t.configAreaRatio
         t._radius *= t.configAreaRatio
         t._separation *= t.configAreaRatio
         t._alignment *= t.configAreaRatio
@@ -121,7 +119,7 @@ class BoidManager {
         t._maxCloseness *= t.configAreaRatio
         t.ctx = t.canvas.getContext('2d')
         t.boids = []
-        for (let i = 0; i < t.boidCt; i++) {
+        for (let i = 0; i < t._minBoidCt; i++) {
             t.boids.push(new Boid(
                 [t.canvas.width*Math.random(), t.canvas.height*Math.random()], 
                 normalize(Math.random()-.5, Math.random()-.5), 
@@ -183,12 +181,12 @@ class BoidManager {
         start()
         async function start() {
             // clear canvas
-            t.glHandler = await initComputeWebgl(t.boids, pointerPos)
-            console.log(t._maxNeighborDistance)
+            t.glHandler = await initComputeWebgl(t.boids, pointerPos, t._absoluteMaxBoids)
             t.glHandler.updateWeights(t._separation, t._alignment, t._cohesion, t._stubbornness, t._pointerAttraction, t._maxNeighborDistance, t._maxCloseness)
             let prevTime = performance.now();
             let timeRemovedAt = prevTime;
             let time10LastAdded = prevTime;
+            let boidsRemovedAt = 0;
             function perFrame(time)
             {
                 let dt = (time - prevTime) / 1000
@@ -211,24 +209,29 @@ class BoidManager {
                     t.boids[i].update(t.ctx)
                     t.boids[i].draw(t.ctx)
                 }
-                if (dt>1/40)
+                if (dt>1/55)
                 {
                     time10LastAdded = performance.now()
-                    if (dt>1/30 && t.boids.length-2 > t._minBoidCt && (time - timeRemovedAt) > 1000) {
+                    if (dt>1/55 && t.boids.length-1 > t._minBoidCt && (time - timeRemovedAt) > 500) {
                         timeRemovedAt = time
-                        for (var i = 0; i<2; i++)
+                        for (var i = 0; i<1000*(dt-1/55); i++)
                         {
                             t.boids.pop();
                         }
                         t.glHandler.updateBoidCt(t.boids)
                     }
                 }
-                if (dt <= 1/45 && (time - time10LastAdded)/1000 > t.boids.length/t._maxBoids && t.boids.length - 8 < t._maxBoids)
+                if (dt <= 1/60 && 5*(time - time10LastAdded)/1000 > t.boids.length/t._maxBoids && t.boids.length <= t._maxBoids && t.boids.length <= t._absoluteMaxBoids)
                 {
-                    console.log( (time - time10LastAdded)/1000, t.boids.length/t._maxBoids)
                     time10LastAdded = performance.now()
-                    console.log(t.boids.length)
-                    for (var i = 0; i<8; i++)
+                    let addAmount = Math.min(t._maxBoids - t.boids.length, time10LastAdded - timeRemovedAt)
+                    addAmount /= 2
+                    if (addAmount<1) 
+                    {
+                        addAmount = 1
+                    }
+                    addAmount = Math.min(addAmount, t._absoluteMaxBoids - t.boids.length)
+                    for (var i = 0; i<addAmount; i++)
                     {
                         switch(i%4)
                         {
@@ -269,6 +272,7 @@ class BoidManager {
                     t.glHandler.updateBoidCt(t.boids)
                 }
                 // request new frame
+                t.canvas.dispatchEvent(new Event('draw'))
                 requestAnimationFrame(perFrame)
             }
             requestAnimationFrame(perFrame)
@@ -276,7 +280,7 @@ class BoidManager {
     }
     set minBoidCt(v) {
         this._minBoidCt = v
-        while (this._minBoidCt > this.boids.length) {
+        while (this._minBoidCt > this.boids.length && this.boids.length < this._absoluteMaxBoids) {
             this.boids.push(new Boid(
                 [this.canvas.width*Math.random(), this.canvas.height*Math.random()],
                 normalize(Math.random()-.5, Math.random()*.5),
@@ -348,7 +352,6 @@ class BoidManager {
     }
     set speed(v) {
         this._speed = v;
-        console.log('here')
         this.boids.forEach(b => b.speed = v);
     }
     get speed() {
@@ -379,17 +382,17 @@ Boid.prototype.draw = function(ctx) {
     // to getPixels and then draw them in javascipt, better to do almost all of it on gpu
     const t = this;
     if (Number.isNaN(t.pos[0]) || Number.isNaN(t.pos[1])) {
-        console.log('frick')
+        console.log('position of boid is NaN :(')
         t.pos[0] = 0
         t.pos[1] = 0
         return;
     }
-    const size = Math.max(t.radius, 1)
+    const size = t.radius
     function drawTrail()
     {
         ctx.beginPath()
         ctx.moveTo(t.pos[0], t.pos[1])
-        ctx.lineTo(t.pos[0] - t.direction[0]*size*1.5, t.pos[1]  - t.direction[1]*size*1.5)
+        ctx.lineTo(t.pos[0] - t.direction[0]*size*1.25, t.pos[1]  - t.direction[1]*size*1.25)
         // ctx.strokeStyle = '#FFF'
         ctx.strokeStyle = '#8334eb'
         ctx.lineWidth = size
@@ -399,20 +402,20 @@ Boid.prototype.draw = function(ctx) {
     {
         
         ctx.beginPath()
-        ctx.moveTo(t.pos[0], t.pos[1])
-        ctx.lineTo(t.pos[0] - t.direction[0]*size, t.pos[1]  - t.direction[1]*size)
+        ctx.moveTo(t.pos[0] + t.direction[0]*size/2, t.pos[1]+ t.direction[1]*size/2)
+        ctx.lineTo(t.pos[0] - t.direction[0]*size/2, t.pos[1]  - t.direction[1]*size/2)
         ctx.strokeStyle = '#AD7CEE'
         // ctx.strokeStyle = '#FFF'
         ctx.lineWidth = size
         ctx.stroke()
     }
     drawTrail()
-    // drawHead()
+    drawHead()
 }
 Boid.prototype.update = function(ctx)
 {
     if (Number.isNaN(this.direction[0]) || Number.isNaN(this.direction[1])) {
-        console.log('frick for direction before norming')
+        console.log('direction is NaN before norming')
         this.direction[0] = 0
         this.direction[1] = 1
         // return;
@@ -423,13 +426,12 @@ Boid.prototype.update = function(ctx)
         let length = Math.sqrt(direction[0]*direction[0] + direction[1]*direction[1])
         if (length === 0 || !Number.isFinite(length))
         {
-            // console.log('direction is 0, 0')
+            console.log('direction is 0, 0')
             return [0, 1]
         }
         return [direction[0]/length, direction[1]/length]
     }
     if (Number.isNaN(this.direction[0]) || Number.isNaN(this.direction[1])) {
-        console.log('frick for direction')
         this.direction[0] = 0
         this.direction[1] = 1
         return;
@@ -459,7 +461,7 @@ Boid.prototype.update = function(ctx)
 
 
 // compute shader def for boids
-async function initComputeWebgl(boids, pointerPos)
+async function initComputeWebgl(boids, pointerPos, shaderMaxBoids)
 {
     const vs = `
     attribute vec4 position;
@@ -468,7 +470,7 @@ async function initComputeWebgl(boids, pointerPos)
     }
     `;
     // import fragment shader from posDirCalc.glsl
-    const fs = await (await fetch('./posDirCalc.glsl')).text();
+    const fs = (await (await fetch('./posDirCalc.glsl')).text()).replace(/MAX_BOIDS = 10000;/, `MAX_BOIDS = ${shaderMaxBoids};`);
     // output needs width of 2 because each rgb pixel stores one 32 bit float, and we have 2 floats for x and y direction
     const dstWidth = 2;
     let dstHeight = boids.length;
@@ -605,7 +607,6 @@ async function initComputeWebgl(boids, pointerPos)
         gl.uniform1f(maxClosenessLoc, v);
     };
     out.updateWeights = (separation, alignment, cohesion, stubbornness, pointerAttraction, maxNeighborDistance, maxCloseness) => {
-        console.log(separation, alignment, cohesion, stubbornness, pointerAttraction, maxNeighborDistance, maxCloseness);
         out.updateSeparation(separation);
         out.updateAlignment(alignment);
         out.updateCohesion(cohesion);
@@ -651,7 +652,6 @@ async function initComputeWebgl(boids, pointerPos)
         gl.readPixels(0, 0, dstWidth, dstHeight, gl.RGBA, gl.UNSIGNED_BYTE, results);
         // convert the results to a float32 array
         const result = new Float32Array(results.buffer);
-        // console.log([...results].map(e=>Math.round(Number(e)/2.55)/100), result);
         return result;
     }
     out.updateBoidCt = (boids)=>

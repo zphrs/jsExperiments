@@ -84,21 +84,26 @@ void main() {
                 sumOfPositions += neighborPos;
                 sumOfDirections += getXorY(neighborDir, x);
                 neighborCt++;
-            }
-            if (dist < maxCloseness && dist > 0.0) {
-                sumOfRepulsiveForces += maxCloseness*getXorY(normalize(myPos - neighborPos), x)/dist;
+                if (dist < maxCloseness) {
+                    sumOfRepulsiveForces += maxCloseness*getXorY(normalize(myPos - neighborPos), x)/dist;
+                }
             }
         }
     }
 
-    if (neighborCt > 0) {
-        float nCt = float(neighborCt);
-        sumOfPositions /= nCt;
-        sumOfDirections /= nCt;
-        // sumOfRepulsiveForces /= nCt;
-        float value = 0.0;
+    float value = 0.0;
+    if (pointerPos.x >= 0.0 && pointerPos.y >= 0.0) {
+        value += getXorY(normalize(pointerPos - myPos), x)*pointerAttraction;
+        float dist = distance(myPos, pointerPos);
+        value += 20.0*maxCloseness*separation*(getXorY(normalize(myPos - pointerPos), x)/dist);
+    }
+    float nCt = float(neighborCt);
+    sumOfPositions /= nCt;
+    sumOfDirections /= nCt;
+    // sumOfRepulsiveForces /= nCt;
+    if (nCt > 0.0) {
         if (cohesion > 0.0) {
-            value = getXorY(normalize(sumOfPositions-myPos)*cohesion, x);
+            value += getXorY(normalize(sumOfPositions-myPos)*cohesion, x);
         }
         if (alignment > 0.0) {
             value += sumOfDirections*alignment;
@@ -106,23 +111,11 @@ void main() {
         if (separation > 0.0) {
             value += sumOfRepulsiveForces*separation;
         }
-        if (stubbornness > 0.0) {
-            value += getXorY(myDir, x)*stubbornness;
-        }
-        if (pointerPos.x >= 0.0 && pointerPos.y >= 0.0) {
-            value += getXorY(normalize(pointerPos - myPos), x)*pointerAttraction;
-            float dist = distance(myPos, pointerPos);
-            value += 20.0*maxCloseness*separation*(getXorY(normalize(myPos - pointerPos), x)/dist);
-        }
-        if (value == 0.0) {
-            value = getXorY(myDir, x);
-        }
-        // value = getXorY(myDir, x)*stubbornness;
-        gl_FragColor = encode_float(value).abgr;
     }
-    else
-    {
-        gl_FragColor = encode_float(getXorY(myDir, x)*stubbornness).abgr;
+    if (stubbornness > 0.0) {
+        value += getXorY(myDir, x)*stubbornness;
     }
+    // value = getXorY(myDir, x)*stubbornness;
+    gl_FragColor = encode_float(value).abgr;
     // gl_FragColor = encode_float(getXorY(vec2(maxNeighborDistance, maxCloseness), x)).abgr;
 }
