@@ -4,8 +4,8 @@ function normalize(...args) {
     return args.map((x) => x/vecLength)
 }
 let canvas=null, 
-minBoids=1, maxBoids=1500, absoluteMaxBoids = 10000, speed=500, radius = 10,
-separation=.2, alignment=1, cohesion=.8, stubbornness=8, pointerAttraction=4,
+minBoids=1, maxBoids=1000, absoluteMaxBoids = 10000, speed=500, radius = 10,
+separation=.2, alignment=1, cohesion=.8, stubbornness=8, pointerAttraction=1,
 maxNeighborDistance=50, maxCloseness=50,
 minTouchTime = 50,
 canvasWidthAtConfig = 1920,
@@ -26,9 +26,10 @@ let bm = new BoidManager(canvas, canvasWidthAtConfig, canvasHeightAtConfig,
     maxNeighborDistance, maxCloseness, 
     minTouchTime)
 
-visCanvas.width = bm.maxNeighborDistance*3;
-visCanvas.height = bm.maxNeighborDistance*3;
+visCanvas.width = bm.maxNeighborDistance*2.75;
+visCanvas.height = bm.maxNeighborDistance*2.75;
 
+let hiddenAt = -1;
 
 // set up click listener for collapse 
 collapse.addEventListener('click', () => {
@@ -37,12 +38,20 @@ collapse.addEventListener('click', () => {
         controlForm.style.display = 'none'
         visCanvas.style.backgroundColor = 'transparent'
         visCanvas.style.backdropFilter = 'blur(0px)'
+        visCanvas.style.opacity = '0'
         visCanvas.style.setProperty('-webkit-backdrop-filter', 'blur(0px)')
+        window.setTimeout(() => {
+            visCanvas.style.display = 'none'
+        }, 500)
+        hiddenAt = performance.now();
     } else {
         controlForm.style.display = 'block'
         visCanvas.style.backgroundColor = ''
         visCanvas.style.backdropFilter = ''
+        visCanvas.style.opacity = ''
         visCanvas.style.setProperty('-webkit-backdrop-filter', '')
+        visCanvas.style.display = 'block'
+        hiddenAt = -1;
     }
     collapse.firstChild.innerText = controlForm.classList.contains('collapsed') ? 'expand_more' : 'expand_less'
 })
@@ -54,6 +63,10 @@ function updateAlignment(e) {
 }
 controlForm.elements[0].addEventListener('pointermove', updateAlignment)
 controlForm.elements[0].addEventListener('pointerdown', updateAlignment)
+controlForm.elements[0].addEventListener('pointerup', updateCohesion)
+controlForm.elements[0].addEventListener('change', () => {
+    bm.alignment = controlForm.elements[0].value
+});
 
 
 controlForm.elements[1].addEventListener('change', () => {
@@ -61,11 +74,15 @@ controlForm.elements[1].addEventListener('change', () => {
 })
 function updateCohesion(e) {
     bm.cohesion = controlForm.elements[2].value
-    console.log(bm.cohesion)
     e.stopImmediatePropagation();
 }
 controlForm.elements[2].addEventListener('pointermove', updateCohesion)
 controlForm.elements[2].addEventListener('pointerdown', updateCohesion)
+controlForm.elements[2].addEventListener('pointerup', updateCohesion)
+controlForm.elements[0].addEventListener('change', () => {
+    bm.cohesion = controlForm.elements[2].value
+});
+
 
 
 controlForm.elements[3].addEventListener('change', () => {
@@ -77,14 +94,18 @@ function updateSeparation(e) {
 }
 controlForm.elements[4].addEventListener('pointermove', updateSeparation) 
 controlForm.elements[4].addEventListener('pointerdown', updateSeparation)
+controlForm.elements[4].addEventListener('pointerup', updateCohesion)
+controlForm.elements[4].addEventListener('change', () => {
+    bm.separation = controlForm.elements[4].value
+});
 controlForm.elements[5].addEventListener('change', () => {
     showSeparation = controlForm.elements[5].checked
 })
 
 
 const ctx = visCanvas.getContext('2d')
-bm.canvas.addEventListener('draw', (e) => {
-    if (!bm?.boids[0]?.pos[0]) return;
+bm.canvas.addEventListener('draw', () => {
+    if (!bm?.boids[0]?.pos[0] || (hiddenAt>0 && performance.now() - hiddenAt>500)) return;
     ctx.clearRect(0, 0, visCanvas.width, visCanvas.height);
     // draw boids onto vis canvas
     let xStart = bm.boids[0].pos[0] - bm.maxNeighborDistance,
@@ -183,6 +204,6 @@ bm.canvas.addEventListener('draw', (e) => {
     }
 })
 bm.canvas.addEventListener('resize', () => {
-    visCanvas.width = bm.maxNeighborDistance*3;
-    visCanvas.height = bm.maxNeighborDistance*3;
+    visCanvas.width = bm.maxNeighborDistance*2.75;
+    visCanvas.height = bm.maxNeighborDistance*2.75;
 })

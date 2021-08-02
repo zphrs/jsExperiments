@@ -61,6 +61,7 @@ class BoidManager {
         t.minTouchTime = minTouchTime
         t._absoluteMaxBoids = absoluteMaxBoids
         t._maxCloseness = maxCloseness
+        t.timeDialation = 1;
         if (!t.canvas)
         {
             function mountCanvas()
@@ -206,7 +207,7 @@ class BoidManager {
                 }
                 for (let i = 0; i < t.boids.length; i++) {
                     
-                    t.boids[i].update(t.ctx)
+                    t.boids[i].update(t.ctx, t.timeDialation)
                     t.boids[i].draw(t.ctx)
                 }
                 if (dt>1/55)
@@ -277,6 +278,10 @@ class BoidManager {
             }
             requestAnimationFrame(perFrame)
         }
+    }
+    dialateTime(t)
+    {
+        this.timeDialation = t;
     }
     set minBoidCt(v) {
         this._minBoidCt = v
@@ -412,7 +417,7 @@ Boid.prototype.draw = function(ctx) {
     drawTrail()
     drawHead()
 }
-Boid.prototype.update = function(ctx)
+Boid.prototype.update = function(ctx, td)
 {
     if (Number.isNaN(this.direction[0]) || Number.isNaN(this.direction[1])) {
         console.log('direction is NaN before norming')
@@ -420,7 +425,8 @@ Boid.prototype.update = function(ctx)
         this.direction[1] = 1
         // return;
     }
-    this.direction = normalize(this.direction).map(e=>e+Math.random()*0.01-0.005) // add a bit of noise
+    // this.direction = normalize(this.direction).map(e=>e+Math.random()*0.01-0.005) // add a bit of noise
+    this.direction = normalize(this.direction)// multiply by speed
     function normalize(direction)
     {
         let length = Math.sqrt(direction[0]*direction[0] + direction[1]*direction[1])
@@ -436,7 +442,7 @@ Boid.prototype.update = function(ctx)
         this.direction[1] = 1
         return;
     }
-    this.pos = this.pos.map((x, i) => x+this.direction[i]*this.speed*(1/60)*Math.min(ctx.canvas.width,ctx.canvas.height)/2000)
+    this.pos = this.pos.map((x, i) => x+this.direction[i]*this.speed*td*(1/60)*Math.min(ctx.canvas.width,ctx.canvas.height)/2000)
     if (this.pos[0] > ctx.canvas.width)
     {
         this.pos[0] -= ctx.canvas.width

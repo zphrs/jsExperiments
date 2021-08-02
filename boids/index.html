@@ -14,9 +14,9 @@
 	<!-- script.js automatically mounts a boids simulation on the page with id of "boids" via boidsMain's BoidManager class. -->
 	<div id='controls-container'>
 		<form id='controls'>
-			<div class='attribute' id='alignment'>Alignment: <input type="range" name="alignment" id="" value='.8' min=0 max=1 step=.01> <label class="material-icons"><input type="checkbox" name="alignment" id=""><span></span></label></div>
-			<div class='attribute' id='cohesion'>Cohesion: <input type="range" name="cohesion" id="" value='1' min=0 max=1 step=.01> <label class='material-icons'><input type="checkbox" name="cohesion" id=""><span></span></label></div>
-			<div class='attribute' id='separation'>Separation: <input type="range" name="separation" id="" value='.2' min=0 max=1 step=.01> <label class='material-icons'><input type="checkbox" name="separation" id=""><span></span></label> </div>
+			<div class='attribute alignment'>Alignment: <input type="range" name="alignment" id="" value='.8' min=0 max=1 step=.01> <label class="material-icons"><input type="checkbox" name="alignment"><span></span></label></div>
+			<div class='attribute cohesion'>Cohesion: <input type="range" name="cohesion" id="" value='1' min=0 max=1 step=.01> <label class='material-icons'><input type="checkbox" name="cohesion"><span></span></label></div>
+			<div class='attribute separation'>Separation: <input type="range" name="separation" id="" value='.2' min=0 max=1 step=.01> <label class='material-icons'><input type="checkbox" name="separation"  tabindex="0"><span></span></label> </div>
 		</form>
 		<button id='collapse'><span class="material-icons">expand_less</span></button>
 	</div>
@@ -27,19 +27,35 @@
 			Click/touch/tap anywhere to feed the boids. You can also click/touch/tap and drag to feed the boids continuously.
 			The boids will move towards whereever you touch.
 		</h3>
+		<p>You can also try adjusting the above sliders:</p>
+			<dl>
+				<div class="attribute alignment">
+				<dt>Alignment</dt> 
+				<dd>Boids will align their rotation with their neighbors.</dd>
+				</div>
+				<div class="attribute cohesion">
+				<dt>Cohesion</dt>
+				<dd>Boids will try to head to the center of their neighbors.</dd>
+				</div>
+				<div class="attribute separation">
+				<dt>Separation</dt>
+				<dd>Boids will avoid colliding with one another.</dd>
+			</dl>
+		<p>Clicking on the <span class="material-icons">visibility</span> icon next to the sliders will show or hide the visualization for that attribute's calculation.
+
+		</p>
 		<h2>About</h2>
 		<p>
 			This is a GPGPU based boids simulation that uses the WebGL 1.0 specification for good cross-browser support.
-			The boids simulation is based on <a href="http://www.red3d.com/cwr/boids/">this paper</a> by Craig Reynolds.
+			The boids movement is based on <a href="http://www.red3d.com/cwr/boids/">this paper</a> by Craig Reynolds, with the addition of touch interaction and some other minor tweaks for performance.
 		</p>
 		<p>The image below this big box represents the gpu generated direction for every boid. 
 			As such, it is very flashy since it is recalculating the direction every frame, to 32 bit precision. 
 			<br>That is why this box is so big.
 			<br>It is to make sure that the big flashing image is not displayed when the page is first loaded.
 			I have tried my best to reduce the flashyness of the image while still maintaining most of the raw output from the GPU.
-			Although, keep in mind that it still could cause reactions since it is a very flashy image.
 		</p>
-		<h2>Please do not scroll further if you are sensitive to flashing images.</h2> 
+		<em>Please do not scroll further if you are photosensitive.</em> 
 	</div>
 </body>
 </html>
