@@ -4,7 +4,7 @@ function normalize(...args) {
     return args.map((x) => x/vecLength)
 }
 let canvas=null, 
-minBoids=1, maxBoids=1000, absoluteMaxBoids = 10000, speed=500, radius = 10,
+minBoids=10, maxBoids=1000, absoluteMaxBoids = 10000, speed=500, radius = 10,
 separation=.2, alignment=1, cohesion=.8, stubbornness=8, pointerAttraction=1,
 maxNeighborDistance=50, maxCloseness=50,
 minTouchTime = 50,
