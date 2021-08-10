@@ -1,0 +1,54 @@
+html {
+	font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+	width: 100%;
+	height: 100%;
+}
+file-upload {
+	min-height: 100px;
+	overflow: auto;
+	display: block;
+	margin: 10px;
+	position: relative;
+	border: 5px solid #ccc;
+	border-radius: 20px;
+}
+file-upload.dragover {
+	background-color: lightgreen;
+	border: 5px dashed lightblue;
+}
+file-upload:hover {
+	background-color: #ccc;
+	border: 5px solid lightblue;
+}
+file-upload.error {
+	background-color: lightcoral;
+	border: 5px dashed lightblue;
+}
+file-upload input[type='file']
+{
+	display: none;
+}
+file-upload label {
+	padding-left: 20px;
+	display: block;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	box-sizing: border-box;
+	overflow: auto;
+	cursor: pointer;
+}
+.file-names {
+	color: #333;
+}
+.file-names * {
+	color: black;
+}
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
