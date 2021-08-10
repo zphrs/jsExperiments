@@ -27,18 +27,10 @@ class fileUpload extends HTMLElement {
 			for (let i = 0; i < e.dataTransfer.items.length; i++)
 			{
 				let item = e.dataTransfer.items[i];
-				console.log(item);
 				if (item.kind === 'file')
 				{
 					let file = item.getAsFile();
 					this.addFile(file);
-				}
-				else if (item.kind === 'string')
-				{
-					item.getAsString((file) =>
-					{
-						console.log(file);
-					})
 				}
 			}
 		}
@@ -57,7 +49,6 @@ class fileUpload extends HTMLElement {
 	{
 		this.onError();
 		this.classList.toggle('error', true)
-		console.log(this.classList);
 	}
 	addFile(file)
 	{
@@ -120,7 +111,6 @@ class fileUpload extends HTMLElement {
 		});
 		const label = document.createElement('label');
 		label.appendChild(this.fileInput);
-		console.log(label.innerHTML);
 
 		if (this.showUploaded)
 		{

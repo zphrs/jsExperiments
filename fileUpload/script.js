@@ -19,5 +19,6 @@ window.addEventListener('load', e => {
 			fileName.appendChild(document.createTextNode(file.name));
 			document.body.appendChild(fileName);
 		});
+		uploader.classList.remove('error');
 	})
 });
