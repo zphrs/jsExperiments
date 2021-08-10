@@ -4,9 +4,11 @@ html {
 }
 body {
 	height: 100%;
+	margin-top: 0;
 }
-pre {
-	max-height: 80%;
-	overflow: auto;
-	background-color: lightblue;
+h1 {
+	margin: 0;
+}
+code-box {
+	height: 80%;
 }
