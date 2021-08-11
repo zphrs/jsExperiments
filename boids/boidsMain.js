@@ -40,7 +40,7 @@ function normalize(...args) {
 class BoidManager {
     constructor(
         canvas=null, xScreenSizeAtConfig = 1920, yScreenSizeAtConfig = 1080,
-        minBoids=1, maxBoids=1500, absoluteMaxBoids = 4000, speed=500, radius = 8,
+        minBoids=1, maxBoids=1500, absoluteMaxBoids = 20000, speed=500, radius = 8,
         separation=.1, alignment=.2, cohesion=.1, stubbornness=2, pointerAttraction=1,
         maxNeighborDistance=50, maxCloseness=50,
         minTouchTime = 50
