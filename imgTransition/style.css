@@ -5,17 +5,8 @@ html {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-}
-.img-holder > * {
-	width: 33%;
-}
-@media only screen and (max-width: 900px) {
-	.img-holder {
-		flex-direction: column;
-	}
-	.img-holder > * {
-		width: 100%;
-	}
+	flex-direction: center;
+	width: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,6 +18,6 @@ html {
 @media (prefers-color-scheme: light) {
 	html {
 		background-color: #dfd;
-		color: white
+		color: black
 	}
 }
