@@ -60,8 +60,8 @@ window.addEventListener('load', function() {
     function removeTouch(event)
     {
         delete touches[event.pointerId];
-        if (Object.keys(touches).length === 0) {
-            resetElems()
+        if (event.target === parent && Object.keys(touches).length === 0) {
+            resetElems();
         }
     }
     function changeEachChildsColorOnMouseMove(touches) {
@@ -100,15 +100,16 @@ window.addEventListener('load', function() {
     function storeEachTouch(event)
     {
         touches[event.pointerId] = ({x:event.pageX, y:event.pageY});
-        if ((performance.now() - lastRefreshed)/1000 > 1/15) {
+        if ((performance.now() - lastRefreshed)/1000 > 1/60) {
             changeEachChildsColorOnMouseMove(Object.keys(touches).map(key=>touches[key]));
             lastRefreshed = performance.now();
         }
     }
     function removeTouch(event)
     {
-        delete touches[event.pointerId];
-        resetElems()
+        if (event.target === parent && Object.keys(touches).length === 0) {
+            resetElems();
+        }
     }
     function changeEachChildsColorOnMouseMove(touches) {
         // newFrame(parent);
