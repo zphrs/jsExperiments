@@ -107,6 +107,7 @@ window.addEventListener('load', function() {
     }
     function removeTouch(event)
     {
+        delete touches[event.pointerId];
         if (event.target === parent && Object.keys(touches).length === 0) {
             resetElems();
         }
