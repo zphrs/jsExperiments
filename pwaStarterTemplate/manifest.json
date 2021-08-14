@@ -1,0 +1,17 @@
+{
+    "short_name": "Calming",
+    "name": "Calming",
+    "icons": [
+      {
+        "src": "/favicon.png",
+        "sizes": "1263x1263",
+        "type": "image/png",
+              "purpose": "maskable any"
+      }
+    ],
+    "start_url": "/",
+      "background_color":"#000000",
+      "theme_color":"#000000",
+    "display": "fullscreen",
+      "shortcuts" : []
+  }
