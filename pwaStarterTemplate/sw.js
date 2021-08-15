@@ -25,8 +25,9 @@ self.addEventListener('install', function(event) {
 self.addEventListener('fetch', function(event) {
   function getHeadDate(url) {
     return fetch(GITHUB_URL+'&path=/'+GITHUB_ROOT_PATH+new URL(url).pathname)
-    .then(response => response.json()[0].commit.committer.date)
+    .then(response => response.json())
     .catch((err)=>{
+      console.log(err);
       return new Response('Service worker fetch error', {
         status: 500,
         statusText: 'Service worker fetch error'
@@ -35,7 +36,6 @@ self.addEventListener('fetch', function(event) {
   }
 
   function getCachedResponse(url) {
-    const cache = caches.open(CACHE_NAME);
     return caches.match(url).then(function (response) {
       if (response) {
         return response;
@@ -61,17 +61,18 @@ self.addEventListener('fetch', function(event) {
 
   event.respondWith((async () => {
     const url = event.request.url;
-    const headDate = await getHeadDate(url).catch((err)=>{
-      console.log('fetch to github failed, falling back to most recent cache')
-      return getCachedResponse(url);
-    });
+    const headDate = (await getHeadDate(url))[0].commit.committer.date;
+    console.log(headDate);
     const cachedResponse = await getCachedResponse(url);
+    if (!headDate || headDate.status === 500) {
+      console.log('loading from cache due to bad response from server ' + event.request.url);
+      return await getCachedResponse(url);
+    }
     if (cachedResponse.headers.get('last-modified') === headDate) {
       return cachedResponse;
     }
     const serverResponse = await getFromServer(url);
     const cache = await caches.open(CACHE_NAME);
-    console.log(cache);
     const clonedResponse = serverResponse.clone();
     let headers = new Headers(clonedResponse);
     headers.set('last-modified', headDate);
