@@ -1,10 +1,10 @@
 {
-    "short_name": "Calming",
-    "name": "Calming",
+    "short_name": "pwa",
+    "name": "pwa starter template",
     "icons": [
       {
         "src": "/favicon.png",
-        "sizes": "1263x1263",
+        "sizes": "255x255",
         "type": "image/png",
               "purpose": "maskable any"
       }

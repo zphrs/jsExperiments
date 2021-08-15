@@ -1,1 +1,1 @@
-# Link to replit [link](https://replit.com/@zphyrj/calming#sw.js)
+# service worker that keeps the cache unless service worker is updated
