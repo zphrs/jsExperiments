@@ -13,7 +13,8 @@ class smoothPlaceholderInput extends HTMLElement {
         position: absolute;
         top: 0;
         left: 0;
-        transform: translate3d(0,50%,0);
+        transform: translate3d(0, 50%, 0);
+        transform-origin: left center;
         font-size: 1em;
         pointer-events: none;
         transition: all 0.2s ease-in-out;
@@ -21,7 +22,7 @@ class smoothPlaceholderInput extends HTMLElement {
         font-weight: inherit;
       }
       input:focus ~ .smooth-placeholder-input-placeholder,
-      input.is-autofilled ~ .smooth-placeholder-input-placeholder {
+      .is-filled .smooth-placeholder-input-placeholder {
         left: 0;
         transform: translate3d(0,0,0) scale(.83);
         transform-origin: left center;
@@ -88,20 +89,14 @@ class smoothPlaceholderInput extends HTMLElement {
       if (this.input.value.length > 0)
       {
         if (!frozen) {
-          this.styleElement.sheet.insertRule(`
-          #${this.getAttribute("id")} .smooth-placeholder-input-placeholder {
-            left: 0;
-            transform: translate3d(0,0,0) scale(.83);
-            transform-origin: left center;
-          }
-          `, 0);
+          this.classList.add("is-filled");
           frozen = true;
         }
       }
       else
       {
         if (frozen) {
-          this.styleElement.sheet.removeRule(0);
+          this.classList.remove("is-filled");
           frozen = false;
         }
       }

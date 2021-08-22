@@ -11,10 +11,10 @@ smooth-placeholder-input {
 	transition: all 0.2s ease-in-out;
 }
 smooth-placeholder-input.focus {
-	border: solid 3px #00bcd4;
+	border: solid 3px #60D6D6;
 }
 smooth-placeholder-input:hover {
-	color: #00bcd4;
+	color: #60D6D6;
 }
 smooth-placeholder-input.focus .smooth-placeholder-input-placeholder {
 	color: #222;
@@ -38,6 +38,7 @@ input[type="submit"] {
 	margin: 10px;
 	cursor: pointer;
     font-family: inherit;
+	background-color: transparent;
 	transition: all 0.5s ease;
 }
 input[type="submit"]:hover {

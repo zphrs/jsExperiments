@@ -61,12 +61,19 @@ code-box {
 .invis smooth-placeholder-input {
 	font-size: 2em;
 }
-.invis .smooth-placeholder-input-placeholder {
-	color: #bbb;
+.invis smooth-placeholder-input.focus {
+	border: solid 3px #C7A2E8;
 }
-.invis smooth-placeholder-input.focus .smooth-placeholder-input-placeholder {
+.invis smooth-placeholder-input:hover {
+	color: #FFB3FA;
+}
+.invis .smooth-placeholder-input-placeholder {
+	color: #FFB3FA;
+}
+.invis smooth-placeholder-input.focus .smooth-placeholder-input-placeholder,
+.invis smooth-placeholder-input.is-filled .smooth-placeholder-input-placeholder {
 	color: #ccc;
 }
 .invis smooth-placeholder-input input {
-	color: #ddd;
+	color: #eef;
 }
