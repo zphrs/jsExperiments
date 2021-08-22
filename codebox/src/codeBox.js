@@ -1,4 +1,5 @@
 // https://raw.githubusercontent.com/zphyrj/jsExperiments/main/LICENSE
+// TODO fix bug where it doesn't consider relative URL paths.
 export default class CodeBox extends HTMLElement {
     constructor(src=null)
     {
