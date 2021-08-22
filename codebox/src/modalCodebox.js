@@ -29,7 +29,6 @@ class ModalCodebox extends HTMLElement {
 				e += 'index.html'
 			}
 			const fileLinkDir = e.split('/')
-			console.log(fileLinkDir, minDirectory)
 			for (var j = 0; j<minDirectory.length; j++)
 			{
 				if (minDirectory[j] !== fileLinkDir[j])
@@ -37,10 +36,8 @@ class ModalCodebox extends HTMLElement {
 					if (j === 0)
 					{
 						minDirectory = [];
-						console.log('here')
 						break;
 					}
-					console.log(minDirectory);
 					minDirectory = fileLinkDir.slice(0, j);
 					break;
 				}
@@ -49,7 +46,6 @@ class ModalCodebox extends HTMLElement {
 		if (minDirectory.length>0)
 		{
 			minDirectory = minDirectory.join('/')+'/'
-			console.log(minDirectory)
 		}
 		else
 		{
@@ -59,7 +55,6 @@ class ModalCodebox extends HTMLElement {
 	}
 	connectedCallback() {
 		this.fileLinks = JSON.parse(this.getAttribute('srcs'));
-		console.log(this.fileLinks)
 		this.tabBar = document.createElement('div');
 		this.tabBar.className = 'tab-bar'
 		this.tabBar.onclick = (event)=>((event.target === this.tabBar) && this.select())
@@ -69,7 +64,6 @@ class ModalCodebox extends HTMLElement {
 			this.fileLinks[0] += 'index.html'
 		}
 		this.minDirectory = this._getMinSharedDirect();
-		console.log(this.minDirectory);
 		// makes fileLinks appear on the tabBar
 		this.fileLinks.forEach((fileLink, i)=>{
 			const title = document.createElement('button')
