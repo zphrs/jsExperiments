@@ -11,9 +11,8 @@ class smoothPlaceholderInput extends HTMLElement {
     this.styleElement.innerHTML = `
     .smooth-placeholder-input-placeholder {
         position: absolute;
-        top: 0.75em;
+        top: 0.6em;
         left: 0;
-        color: #aaa;
         font-size: 1em;
         pointer-events: none;
         transition: all 0.2s ease-in-out;
@@ -42,42 +41,32 @@ class smoothPlaceholderInput extends HTMLElement {
       smooth-placeholder-input input { 
         position: absolute;
         left: 0;
-        bottom: -.5em;
+        bottom: -1em;
         top: 0;
+        padding-top: .5em;
         width: 100%;
-        height: 100%;
         box-sizing: border-box;
         outline: none;
         border: none;
         background: none;
         font-size: 1em;
-        margin-top: .5em;
         font-family: inherit;
+        display: flex;
+        display: table-cell;
+        vertical-align: bottom;
         transition: all 0.2s ease-in-out;
+        min-height: 3em;
+      }
+      smooth-placeholder-input input {
+        transition: background-color .2s ease-in-out 0s;
       }
       smooth-placeholder-input input::placeholder {
         color: transparent;
-      }
-      @keyframes onAutoFillStart {  from {/**/}  to {/**/}}
-      @keyframes onAutoFillCancel {  from {/**/}  to {/**/}}
-      smooth-placeholder-input input:-webkit-autofill {
-          // Expose a hook for JavaScript when autofill is shown
-          // JavaScript can capture 'animationstart' events
-          animation-name: onAutoFillStart;
-          
-          // Make the background color become yellow really slowly
-          transition: background-color 50000s ease-in-out 0s;
-      }
-      smooth-placeholder-input input:not(:-webkit-autofill) {
-          // Expose a hook for JS onAutoFillCancel
-          // JavaScript can capture 'animationstart' events
-          animation-name: onAutoFillCancel;
       }
     `;
     
   }
   connectedCallback() {
-    console.log('HERE');
     this.getAttributeNames().forEach(attr => {
       if (attr == "placeholder")
       {
@@ -95,7 +84,6 @@ class smoothPlaceholderInput extends HTMLElement {
     let frozen = false;
     const inputChangeHandler = ()=>
     {
-      console.log(this.input.value);
       if (this.input.value.length > 0)
       {
         if (!frozen) {
@@ -127,23 +115,12 @@ class smoothPlaceholderInput extends HTMLElement {
     this.input.addEventListener("blur", ()=>{
       this.classList.remove("focus");
     });
-    const AUTOFILLED = 'is-autofilled'
-    const onAutoFillStart = (el) => 
-    {
-      el.classList.add(AUTOFILLED)
-    }
-    const onAutoFillCancel = (el) => {
-      el.classList.remove(AUTOFILLED)
-    }
-    const onAnimationStart = ({ target, animationName }) => {
-        switch (animationName) {
-            case 'onAutoFillStart':
-                return onAutoFillStart(target)
-            case 'onAutoFillCancel':
-                return onAutoFillCancel(target)
-        }
-    }
-    document.querySelector('input').addEventListener('animationstart', onAnimationStart, false)
+    this.input.addEventListener("invalid", ()=>{
+      this.classList.add("invalid");
+    });
+    this.input.addEventListener("valid", ()=>{
+      this.classList.remove("invalid");
+    });
   }
 }
 customElements.define('smooth-placeholder-input', smoothPlaceholderInput);

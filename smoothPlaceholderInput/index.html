@@ -12,15 +12,31 @@
 </head>
 <body>
 	<div class="container">
-		<form>
-			<smooth-placeholder-input name="name" id="username" placeholder="Username"></smooth-placeholder-input>
-			<smooth-placeholder-input name="name" id="password" aria-autocomplete="both" autocomplete="current-password" type="password" placeholder="Password"></smooth-placeholder-input>
+		<form action="javascript:void(0);">
+			<h2>A bunch of test inputs</h2>
+			<smooth-placeholder-input type="text" placeholder="Text" class="form-control" id="textInput" name="textInput" value=""></smooth-placeholder-input>
+			<smooth-placeholder-input name="username" id="username" aria-autocomplete="both" placeholder="Username" type="Username" autocomplete="username"></smooth-placeholder-input>
+			<smooth-placeholder-input name="password" id="password"  aria-autocomplete="both" autocomplete="password" type="password" placeholder="Password"></smooth-placeholder-input>
+			<smooth-placeholder-input name="email" id="email" aria-autocomplete="both" autocomplete="email" type="email" placeholder="Email"></smooth-placeholder-input>
+			<smooth-placeholder-input name="url" id="url" aria-autocomplete="both" autocomplete="url" type="url" placeholder="URL"></smooth-placeholder-input>
+			<smooth-placeholder-input name="tel" id="tel" aria-autocomplete="both" autocomplete="tel" type="tel" placeholder="Telephone"></smooth-placeholder-input>
+			<smooth-placeholder-input name="number" id="number" aria-autocomplete="both" autocomplete="number" type="number" placeholder="Number"></smooth-placeholder-input>
+			<smooth-placeholder-input name="search" id="search" aria-autocomplete="both" autocomplete="search" type="search" placeholder="Search"></smooth-placeholder-input>
+			<smooth-placeholder-input name="time" id="time" aria-autocomplete="both" autocomplete="time" type="time" placeholder="Time"></smooth-placeholder-input>
+			<smooth-placeholder-input name="date" id="date" aria-autocomplete="both" autocomplete="date" type="date" placeholder="Date"></smooth-placeholder-input>
+			<smooth-placeholder-input name="month" id="month" aria-autocomplete="both" autocomplete="month" type="month" placeholder="Month"></smooth-placeholder-input>
+			<smooth-placeholder-input name="week" id="week" aria-autocomplete="both" autocomplete="week" type="week" placeholder="Week"></smooth-placeholder-input>
+			<smooth-placeholder-input name="datetime-local" id="datetime-local" aria-autocomplete="both" autocomplete="datetime-local" type="datetime-local" placeholder="DateTime Local"></smooth-placeholder-input>
+			<smooth-placeholder-input name="color" id="color" aria-autocomplete="both" autocomplete="color" type="color" placeholder="Color"></smooth-placeholder-input>
+			<smooth-placeholder-input name="range" id="range" aria-autocomplete="both" autocomplete="range" type="range" placeholder="Range"></smooth-placeholder-input>
+			<!-- file input -->
+			<smooth-placeholder-input name="file" id="file" aria-autocomplete="both" autocomplete="file" type="file" placeholder=""></smooth-placeholder-input>
 			<input type="submit" >
 		</form>
 		<div class="right">
 			<h1>Smooth Placeholder Input</h1>
-			<p>A simple input with placeholder text that animates in and out of focus. Check out the source code below: </p>
-			<modal-codebox srcs='["/index.html", "/smoothPlaceholderInput.js", "/left.css"]'>
+			<p>A simple input field with placeholder text that animates to the top of the box when clicked or after input is entered. Check out the source code below: </p>
+			<modal-codebox srcs='["./index.html", "./left.css", "./smoothPlaceholderInput.js"]'>
 			</modal-codebox>
 		</div>
 	</div>
