@@ -81,7 +81,8 @@ class ModalCodebox extends HTMLElement {
 			title.onclick = () => this.select(i)
 		})
 		this.style.setProperty("--bright", "#BFBFBF");
-		this.style.setProperty("--medium", "rgba(255, 255, 255, .5)");
+		this.style.setProperty("--medium-bright", "#9B9B9B");
+		this.style.setProperty("--medium", "rgba(255, 255, 255, .66)");
 		this.style.setProperty("--dark", "rgba(0, 0, 0, .5)");
 		this.styleElem = document.createElement('style')
 		this.styleElem.innerHTML = 
@@ -94,7 +95,7 @@ class ModalCodebox extends HTMLElement {
 .filename {
 	border: none;
 	outline: none;
-	background-color: #9B9B9B;
+	background-color: var(--medium-bright);
 	margin: 0;
 	padding: 10px;
 	padding-left: calc(min(5vw, 20px) + 5px);
