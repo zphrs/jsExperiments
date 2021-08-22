@@ -42,6 +42,9 @@ pre {
     width: inherit;
     color: #4e4e4e;
     overflow: auto;
+    position: sticky;
+    top: 0;
+    background-color: inherit;
     margin: 0;
     text-align: center;
     padding: .25em;
