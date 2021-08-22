@@ -11,8 +11,9 @@ class smoothPlaceholderInput extends HTMLElement {
     this.styleElement.innerHTML = `
     .smooth-placeholder-input-placeholder {
         position: absolute;
-        top: 0.6em;
+        top: 0;
         left: 0;
+        transform: translate3d(0,50%,0);
         font-size: 1em;
         pointer-events: none;
         transition: all 0.2s ease-in-out;
@@ -22,7 +23,7 @@ class smoothPlaceholderInput extends HTMLElement {
       input:focus ~ .smooth-placeholder-input-placeholder,
       input.is-autofilled ~ .smooth-placeholder-input-placeholder {
         left: 0;
-        transform: translate3d(0,-.83em,0) scale(.83);
+        transform: translate3d(0,0,0) scale(.83);
         transform-origin: left center;
       }
       .smooth-placeholder-input-container {
@@ -90,7 +91,7 @@ class smoothPlaceholderInput extends HTMLElement {
           this.styleElement.sheet.insertRule(`
           #${this.getAttribute("id")} .smooth-placeholder-input-placeholder {
             left: 0;
-            transform: translate3d(0,-.83em,0) scale(.83);
+            transform: translate3d(0,0,0) scale(.83);
             transform-origin: left center;
           }
           `, 0);

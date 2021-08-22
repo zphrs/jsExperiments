@@ -33,7 +33,8 @@ body {
 }
 @media screen and (max-width: 900px) {
 	.container {
-		flex-direction: column;
+		flex-wrap: wrap;
+		height: max-content;
 	}
 	form {
 		width: 100%;
