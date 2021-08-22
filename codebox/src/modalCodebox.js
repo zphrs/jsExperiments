@@ -80,6 +80,9 @@ class ModalCodebox extends HTMLElement {
 			this.tabBar.appendChild(title)
 			title.onclick = () => this.select(i)
 		})
+		this.style.setProperty("--bright", "#BFBFBF");
+		this.style.setProperty("--medium", "rgba(255, 255, 255, .5)");
+		this.style.setProperty("--dark", "rgba(0, 0, 0, .5)");
 		this.styleElem = document.createElement('style')
 		this.styleElem.innerHTML = 
 `
@@ -114,13 +117,13 @@ class ModalCodebox extends HTMLElement {
 	top: 5px;
 	bottom: 5px;
 	display: inline-block;
-	background-color: #4e4e4e;
+	background-color: var(--dark);
 }
 .filename:first-child::before {
 	display: none;
 }
 .filename.selected {
-	background-color: #BFBFBF;
+	background-color: var(--bright);
 	border-radius: 10px 10px 0 0;
 }
 .filename.selected {
@@ -133,25 +136,25 @@ class ModalCodebox extends HTMLElement {
 	display: none;
 }
 .filename:focus {
-	background-color: #ccc;
+	background-color: var(--medium);
 	z-index: 2;
 }
 .filename:hover {
-	background-color: #ccc;
+	background-color: var(--medium);
 }
 .tab-bar {
 	display: flex; 
 	width: 100%;
 	max-width: 100%;
 	overflow: hidden; 
-	background-color: #4e4e4e;
+	background-color: var(--dark);
 	position: relative;
 }
 file-upload input[type="file"] {
 	display: none;
 }
 code-box {
-	background-color: #BFBFBF;
+	background-color: var(--bright);
 	width: 100%;
 	overflow: auto;
 }
@@ -163,10 +166,10 @@ file-upload label {
 	left: 0;
 	cursor: pointer;
 	display: none;
-	background-color: #4e4e4e;
+	background-color: var(--dark);
 }
 code-box {
-	background-color: #BFBFBF;
+	background-color: var(--bright);
 	max-height: 80%;
 	width: 100%;
 	overflow: auto;
