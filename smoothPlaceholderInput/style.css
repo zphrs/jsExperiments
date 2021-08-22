@@ -20,6 +20,8 @@ body {
 	flex-direction: column;
 	align-items: center;
 	background-color: #77f;
+	overflow: auto;
+	max-height: 100%;
 }
 .right p {
 	padding: 0;
@@ -44,12 +46,26 @@ body {
 modal-codebox {
 	color: #446;
 	width: 75%;
-	height: 75vh;
+	max-height: 80vh;
 	--bright: #bbf !important;
 	--medium: #ccf !important;
 	--medium-bright: #aaf !important;
 }
 code-box {
 	width: 100%;
-	height: 100%;
+}
+.invis {
+	background-color: transparent;
+}
+.invis smooth-placeholder-input {
+	font-size: 2em;
+}
+.invis .smooth-placeholder-input-placeholder {
+	color: #bbb;
+}
+.invis smooth-placeholder-input.focus .smooth-placeholder-input-placeholder {
+	color: #ccc;
+}
+.invis smooth-placeholder-input input {
+	color: #ddd;
 }
