@@ -4,14 +4,14 @@ class smoothPlaceholderInput extends HTMLElement {
     super();
     this.input = document.createElement("input");
     this.placeholder = document.createElement("label");
-    this.placeholder.className = "placeholder";
+    this.placeholder.className = "smooth-placeholder-input-placeholder";
     this.container = document.createElement("div");
-    this.container.className = "container";
+    this.container.className = "smooth-placeholder-input-container ";
     this.styleElement = document.createElement("style");
     this.styleElement.innerHTML = `
-      .placeholder {
+    .smooth-placeholder-input-placeholder {
         position: absolute;
-        top: .5em;
+        top: 0.75em;
         left: 0;
         color: #aaa;
         font-size: 1em;
@@ -20,31 +20,30 @@ class smoothPlaceholderInput extends HTMLElement {
         font-family: inherit;
         font-weight: inherit;
       }
-      input:focus ~ .placeholder {
+      input:focus ~ .smooth-placeholder-input-placeholder,
+      input.is-autofilled ~ .smooth-placeholder-input-placeholder {
         left: 0;
         transform: translate3d(0,-.83em,0) scale(.83);
         transform-origin: left center;
-        color: #777;
       }
-      input::placeholder {
-        color: transparent;
-      }
-      .container {
+      .smooth-placeholder-input-container {
         display: block;
         position: relative;
         width: 100%;
         height: 3em;
         padding: 0;
         margin: 0;
+        overflow: hidden;
       }
-      .host {
+      :host {
         display: block;
         position: relative;
       }
-      input { 
+      smooth-placeholder-input input { 
         position: absolute;
-        bottom: -.2em;
         left: 0;
+        bottom: -.5em;
+        top: 0;
         width: 100%;
         height: 100%;
         box-sizing: border-box;
@@ -52,11 +51,30 @@ class smoothPlaceholderInput extends HTMLElement {
         border: none;
         background: none;
         font-size: 1em;
+        margin-top: .5em;
         font-family: inherit;
-        color: #000;
         transition: all 0.2s ease-in-out;
       }
+      smooth-placeholder-input input::placeholder {
+        color: transparent;
+      }
+      @keyframes onAutoFillStart {  from {/**/}  to {/**/}}
+      @keyframes onAutoFillCancel {  from {/**/}  to {/**/}}
+      smooth-placeholder-input input:-webkit-autofill {
+          // Expose a hook for JavaScript when autofill is shown
+          // JavaScript can capture 'animationstart' events
+          animation-name: onAutoFillStart;
+          
+          // Make the background color become yellow really slowly
+          transition: background-color 50000s ease-in-out 0s;
+      }
+      smooth-placeholder-input input:not(:-webkit-autofill) {
+          // Expose a hook for JS onAutoFillCancel
+          // JavaScript can capture 'animationstart' events
+          animation-name: onAutoFillCancel;
+      }
     `;
+    
   }
   connectedCallback() {
     console.log('HERE');
@@ -72,19 +90,20 @@ class smoothPlaceholderInput extends HTMLElement {
     this.container.appendChild(this.input);
     this.container.appendChild(this.placeholder);
     this.classList.add("host");
-    this.placeholder.for = this.input.id;
+    this.input.id = "spi-"+this.input.id;
+    this.placeholder.setAttribute("for", this.input.id);
     let frozen = false;
     const inputChangeHandler = ()=>
     {
+      console.log(this.input.value);
       if (this.input.value.length > 0)
       {
         if (!frozen) {
           this.styleElement.sheet.insertRule(`
-          .placeholder {
-            left: 0 !important;
-            transform: translate3d(0,-.83em,0) scale(.83) !important;
-            transform-origin: left center !important;
-            color: #777 !important;
+          #${this.getAttribute("id")} .smooth-placeholder-input-placeholder {
+            left: 0;
+            transform: translate3d(0,-.83em,0) scale(.83);
+            transform-origin: left center;
           }
           `, 0);
           frozen = true;
@@ -108,6 +127,23 @@ class smoothPlaceholderInput extends HTMLElement {
     this.input.addEventListener("blur", ()=>{
       this.classList.remove("focus");
     });
+    const AUTOFILLED = 'is-autofilled'
+    const onAutoFillStart = (el) => 
+    {
+      el.classList.add(AUTOFILLED)
+    }
+    const onAutoFillCancel = (el) => {
+      el.classList.remove(AUTOFILLED)
+    }
+    const onAnimationStart = ({ target, animationName }) => {
+        switch (animationName) {
+            case 'onAutoFillStart':
+                return onAutoFillStart(target)
+            case 'onAutoFillCancel':
+                return onAutoFillCancel(target)
+        }
+    }
+    document.querySelector('input').addEventListener('animationstart', onAnimationStart, false)
   }
 }
 customElements.define('smooth-placeholder-input', smoothPlaceholderInput);

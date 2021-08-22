@@ -1,22 +1,58 @@
 html {
 	font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+	height: 100%;
 }
-smooth-placeholder-input {
-	font-size: 1em;
-	border: solid 3px #ccc;
-	width: 200px;
-	padding-left: 1em;
-	padding-right: 1em;
-	border-radius: 1em;
-	box-sizing: border-box;
-	transition: all 0.2s ease-in-out;
+body {
+	margin: 0;
+	height: 100%;
 }
-smooth-placeholder-input.focus {
-	border: solid 3px #77f;
+.container {
+	min-height: 100%;
+	display: flex;
+	min-width: 100%;
 }
-smooth-placeholder-input .placeholder {
-	color: #ccc;
+.right {
+	padding: 10px;
+	color: white;
+	display: flex;
+	width: 50%;
+	flex-grow: 1;
+	flex-direction: column;
+	align-items: center;
+	background-color: #77f;
 }
-smooth-placeholder-input.focus .placeholder {
-	color: #ccc;
+.right p {
+	margin: 0;
+	padding: 0;
+	color: #eef;
+	font-size: 1.5em;
+}
+.right h1 {
+	text-align: center;
+}
+@media screen and (max-width: 900px) {
+	.container {
+		flex-direction: column;
+	}
+	form {
+		width: 100%;
+	}
+	.right {
+		width: 100%;
+		box-sizing: border-box;
+	}
+}
+modal-codebox {
+	color: black;
+	width: 75%;
+	height: 75vh;
+}
+code-box {
+	width: 100%;
+	height: 100%;
+	background-color: #eef;
+}
+.filename {
+	margin: 0;
+	padding: 0;
 }

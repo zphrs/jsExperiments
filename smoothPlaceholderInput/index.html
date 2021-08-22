@@ -4,13 +4,25 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="left.css">
 	<link rel="stylesheet" href="style.css">
 	<script src="smoothPlaceholderInput.js"></script>
+	<script src="https://zphyrj.github.io/jsExperiments/codebox/src/modalCodebox.js" type="module"></script>
 	<title>Smooth Placeholder Input</title>
 </head>
 <body>
-	<form>
-		<smooth-placeholder-input name="name" id="test" placeholder="Testingggg"></smooth-placeholder-input>
-	</form>
+	<div class="container">
+		<form>
+			<smooth-placeholder-input name="name" id="username" placeholder="Username"></smooth-placeholder-input>
+			<smooth-placeholder-input name="name" id="password" aria-autocomplete="both" autocomplete="current-password" type="password" placeholder="Password"></smooth-placeholder-input>
+			<input type="submit" >
+		</form>
+		<div class="right">
+			<h1>Smooth Placeholder Input</h1>
+			<p>A simple input with placeholder text that animates in and out of focus. Check out the source code below: </p>
+			<modal-codebox srcs='["/index.html", "/smoothPlaceholderInput.js", "/left.css"]'>
+			</modal-codebox>
+		</div>
+	</div>
 </body>
 </html>

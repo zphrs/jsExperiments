@@ -1,0 +1,47 @@
+smooth-placeholder-input {
+	font-size: 1em;
+	border: solid 3px #ccc;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-radius: 10px;
+	box-sizing: border-box;
+	margin: 10px;
+	transition: all 0.2s ease-in-out;
+}
+input[type="submit"] {
+	border: 3px solid #77f;
+	border-radius: 10px;
+	color: #777;
+    font-weight: 700;
+	padding: 10px;
+	margin: 10px;
+	cursor: pointer;
+    font-family: inherit;
+	transition: all 0.5s ease;
+}
+input[type="submit"]:hover {
+	background-color: #77f;
+	color: #fff;
+}
+
+form {
+	width: 500px;
+	min-height: 100%;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: center;
+	box-sizing: border-box;
+	background-color: #eee;
+	flex-shrink: 0;
+}
+smooth-placeholder-input.focus {
+	border: solid 3px #00bcd4;
+}
+smooth-placeholder-input:hover {
+	color: #00bcd4;
+}
+smooth-placeholder-input.focus .smooth-placeholder-input-placeholder {
+	color: #777;
+}
