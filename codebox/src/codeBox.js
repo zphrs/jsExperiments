@@ -44,6 +44,7 @@ pre {
     overflow: auto;
     position: sticky;
     top: 0;
+    left: 0;
     background-color: inherit;
     margin: 0;
     text-align: center;
