@@ -13,7 +13,11 @@ class smoothPlaceholderInput extends HTMLElement {
         position: absolute;
         top: 0;
         left: 0;
-        transform: translate3d(0, 50%, 0);
+        bottom: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: left;
         transform-origin: left center;
         font-size: 1em;
         pointer-events: none;
@@ -24,7 +28,7 @@ class smoothPlaceholderInput extends HTMLElement {
       input:focus ~ .smooth-placeholder-input-placeholder,
       .is-filled .smooth-placeholder-input-placeholder {
         left: 0;
-        transform: translate3d(0,0,0) scale(.83);
+        transform: translate3d(0,-.833em,0) scale(.83);
         transform-origin: left center;
       }
       .smooth-placeholder-input-container {
