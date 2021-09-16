@@ -3,7 +3,7 @@
     "name": "pwa starter template",
     "icons": [
       {
-        "src": "/favicon.png",
+        "src": "./favicon.png",
         "sizes": "255x255",
         "type": "image/png",
               "purpose": "maskable any"

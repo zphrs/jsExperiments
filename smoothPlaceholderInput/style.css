@@ -49,7 +49,7 @@ modal-codebox {
 	width: 75%;
 	max-height: 80vh;
 	--bright: #bbf !important;
-	--medium: #ccf !important;
+	--highlight: #ccf !important;
 	--medium-bright: #aaf !important;
 }
 code-box {
