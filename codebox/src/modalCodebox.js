@@ -76,7 +76,7 @@ class ModalCodebox extends HTMLElement {
 		})
 		this.style.setProperty("--bright", "#BFBFBF");
 		this.style.setProperty("--medium-bright", "#9B9B9B");
-		this.style.setProperty("--medium", "rgba(255, 255, 255, .66)");
+		this.style.setProperty("--highlight", "rgba(255, 255, 255, .66)");
 		this.style.setProperty("--dark", "rgba(0, 0, 0, .5)");
 		this.styleElem = document.createElement('style')
 		this.styleElem.innerHTML = 
@@ -131,11 +131,11 @@ class ModalCodebox extends HTMLElement {
 	display: none;
 }
 .filename:focus {
-	background-color: var(--medium);
+	background-color: var(--highlight);
 	z-index: 2;
 }
 .filename:hover {
-	background-color: var(--medium);
+	background-color: var(--highlight);
 }
 .tab-bar {
 	display: flex; 

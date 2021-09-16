@@ -5,10 +5,19 @@ html {
 body {
 	height: 100%;
 	margin-top: 0;
+	background-color: white;
 }
 h1 {
 	margin: 0;
 }
 code-box {
 	height: 80%;
+}
+modal-codebox {
+	color: black;
+	width: 75%;
+	max-height: 80vh;
+	--bright: rgb(255, 192, 192) !important;
+	--highlight: rgb(255, 130, 130) !important;
+	--medium-bright: rgba(255, 255, 255, .5) !important;
 }
