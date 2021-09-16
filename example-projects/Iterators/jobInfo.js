@@ -38,6 +38,7 @@ let JobInfo = function(data) {
         !added && iter.add(obj); // if not added, add to end
         jobTitleElem.value = "";
         jobYearElem.value = "";
+        jobCompanyElem.value = "";
         refreshDom();
     }
     function setData(data) {
@@ -66,9 +67,7 @@ let JobInfo = function(data) {
             let edElem = document.createElement("div");
             let removeBtn = document.createElement("button");
             removeBtn.type = "button";
-            edElem.innerHTML = `<h3>${next.jobYear}</h3>
-            <smooth-placeholder-input type="text" value=${next.jobTitle} name="school-name" id="school-name" placeholder="School Name" class="host"></smooth-placeholder-input>
-            <smooth-placeholder-input type="text" value=${next.companyName} name="job-company" id="job-company" placeholder="Company" class="host"></smooth-placeholder-input>`;
+            edElem.innerHTML = `<h3>${next.jobYear} - ${next.jobTitle} at ${next.companyName}</h3>`;
             removeBtn.innerHTML = "X";
             removeBtn.className = "remove-btn";
             edElem.appendChild(removeBtn);

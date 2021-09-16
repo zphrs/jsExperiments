@@ -63,8 +63,7 @@ let Education = function(data) {
             let edElem = document.createElement("div");
             let removeBtn = document.createElement("button");
             removeBtn.type = "button";
-            edElem.innerHTML = `<smooth-placeholder-input value=${next.gradYear} name="grad-year" id="grad-year" step="1" placeholder="Year" class="host"></smooth-placeholder-input>
-            <smooth-placeholder-input type="text" value=${next.schoolName} name="school-name" id="school-name" placeholder="School Name" class="host"></smooth-placeholder-input>`;
+            edElem.innerHTML = `<h3>${next.gradYear} - ${next.schoolName}</h3>`;
             removeBtn.innerHTML = "X";
             removeBtn.className = "remove-btn";
             edElem.appendChild(removeBtn);

@@ -77,12 +77,13 @@ smooth-placeholder-input input {
 
 .submit-btn {
 	position: relative;
-	width: 50%;
+	width: 100%;
 	padding-top: 10px;
 	padding-bottom: 10px;
 	background-color: transparent;
 	color: inherit;
 	border: none;
+	height: 100%;
 	border-radius: 10px;
 	transition: all .5s linear;
 	border: 2px solid white;
@@ -223,7 +224,13 @@ body {
 	form {
 	   display: none;
 	}
+	button {
+		display: none;
+	}
 	body {
 		height: 100%;
+	}
+	#resume {
+		display: unset;
 	}
 }
