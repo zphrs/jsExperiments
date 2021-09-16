@@ -1,0 +1,229 @@
+html {
+	font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+	background-color: black;
+	color: white;
+	height: 100%;
+}
+body {
+	padding: 0;
+	margin: 0;
+	height: 100%;
+	box-sizing: border-box;
+}
+smooth-placeholder-input {
+	color: white;
+	border: 2px solid white;
+	display: block;
+	width: 100%;
+	margin-bottom: 10px;
+	border-radius: 10px;
+	box-sizing: border-box;
+	transition: all .5s linear;
+	overflow: hidden;
+	padding-left: 5px;
+	padding-right: 5px;
+	flex-shrink: 0;
+}
+smooth-placeholder-input.is-filled,
+smooth-placeholder-input.focus {
+	color: gray;
+	/* background-color: white; */
+}
+smooth-placeholder-input input {
+	color: white !important;
+}
+.add-btn {
+	position: relative;
+	width: 50%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: transparent;
+	color: inherit;
+	border: none;
+	border-radius: 10px;
+	transition: all .5s linear;
+	border: 2px solid white;
+	cursor: pointer;
+	align-self: center;
+	outline: none;
+}
+.remove-btn {
+	position: relative;
+	height: 2.5em;
+	width: 2.5em;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	background-color: transparent;
+	color: white;
+	border: none;
+	margin-left: 5px;
+	margin-right: 5px;
+	border-radius: 10px;
+	transition: all .5s linear;
+	border: 2px solid white;
+	cursor: pointer;
+	align-self: center;
+	outline: none;
+}
+.remove-btn:hover, .remove-btn:focus {
+	color: grey;
+	border: 2px solid red;
+}
+.add-btn:hover, .add-btn:focus {
+	background-color: white;
+	color: black;
+}
+
+.submit-btn {
+	position: relative;
+	width: 50%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: transparent;
+	color: inherit;
+	border: none;
+	border-radius: 10px;
+	transition: all .5s linear;
+	border: 2px solid white;
+	cursor: pointer;
+	align-self: center;
+	outline: none;
+	font: inherit;
+	font-weight: 700;
+}
+.submit-btn:hover, .submit-btn:focus {
+	background-color: white;
+	color: black;
+}
+.section {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+.entry-list, .entry-list div {
+	width: 100%;
+}
+.entry-list > div {
+	margin-top: 10px;
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 3em;
+	justify-content: space-between;
+    align-content: space-between;
+}
+.entry-list > div > smooth-placeholder-input {
+	margin: 0;
+	width: 30%;
+	flex-grow: 0;
+	height: 3em;
+	flex-shrink: 1;
+	flex-grow: 1;
+	margin-left: 5px;
+}
+.entry-list > div > smooth-placeholder-input:first-child {
+	margin-left: 0;
+}
+form {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	justify-content: space-between;
+	width: 100%;
+	overflow-x: auto;
+	scroll-snap-type: x proximity;
+	height: 50%;
+	position: relative;
+	transition: all 1s linear;
+}
+form::after {
+	content: "";
+	z-index: 10;
+	position: sticky;
+	top: 0;
+	right: 0%;
+	min-width: 10%;
+	height: 100%;
+	background: linear-gradient(to right, transparent, black);
+	bottom: 0;
+
+}
+form.hidden {
+	height: 0%;
+}
+form section {
+	width: 90%;
+	padding-left: 5px;
+	padding-right: 5px;
+	box-sizing: border-box;
+	overflow: auto;
+	height: 100%;
+	flex-shrink: 0;
+	scroll-snap-align: start;
+}
+.center {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	font-size: max(5vw, 1em);
+}
+form::-webkit-scrollbar,
+section::-webkit-scrollbar {
+	width: .5em;
+	height: .5em;
+}
+
+form::-webkit-scrollbar-track,
+section::-webkit-scrollbar-track 
+{
+	background-color: black;
+	transition: background-color 1s linear;
+}
+form::-webkit-scrollbar-track:hover,
+section::-webkit-scrollbar-track:hover {
+	background-color: #383838;
+}
+   
+form::-webkit-scrollbar-thumb,
+section::-webkit-scrollbar-thumb {
+	background-color: grey;
+	border-radius: .5em;
+}
+form::-webkit-scrollbar-thumb:hover,
+section::-webkit-scrollbar-thumb:hover {
+	background-color: darkgrey;
+}
+#resume {
+	height: 50%;
+	overflow-y: auto;
+	background-color: white;
+	color: black;
+	padding: 10px;
+	transition: all 1s linear;
+}
+#resume.maximum {
+	height: 100%;
+}
+body {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+@media (max-height: 600px) {
+	body {
+		height: 200%;
+	}
+}
+@media print {
+	form {
+	   display: none;
+	}
+	body {
+		height: 100%;
+	}
+}

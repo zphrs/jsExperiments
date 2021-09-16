@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Resume Builder</title>
+	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="./code/code.css">
+	<script src="./smoothPlaceholderInput.js"></script>
+	<script src="./script.js" type="module"></script>
+	<script src="./code/modalCodebox.js" type="module"></script>
+	<script src="./code/code.js" type="module"></script>
+</head>
+<body>
+	<div class="code-display">
+		<button class="code-display-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4,3l9,9L4,21,2.5,19.5,10,12,2.5,4.5Z"/><rect x="8" y="20" width="14" height="2"/></svg></button>
+		<div class="code-display-container">
+			<modal-codebox srcs='["./index.html", "./script.js", "./education.js", "./jobInfo.js", "./ListIterator.js", "./style.css"]'></modal-codebox>
+		</div>
+	</div>
+	<form id="form">
+		<section>
+			<div class="center">
+				<h1>Resume Builder</h1>
+			</div>
+		</section>
+		<section class="section" id="user">
+			<h2>User Info</h2>
+			<smooth-placeholder-input type="text" name="name" id="name" placeholder="Name"></smooth-placeholder-input>
+			<smooth-placeholder-input name="email" id="email" placeholder="Email" type="email"></smooth-placeholder-input>
+		</section>
+		<section class="section" id="jobs">
+			<h2>Job Info</h2>
+			<smooth-placeholder-input name="job-year" id="job-year" step="1" placeholder="Year"></smooth-placeholder-input>
+			<smooth-placeholder-input type="text" name="job-title" id="job-title" placeholder="Job Title"></smooth-placeholder-input>
+			<smooth-placeholder-input type="text" name="job-company" id="job-company" placeholder="Company"></smooth-placeholder-input>
+			<button id="job-add" class="add-btn" type="button">+</button>
+			<div class="entry-list" id="job-list">
+			</div>
+		</section>
+		<section class="section" id="jobs">
+			<h2>Education</h2>
+			<smooth-placeholder-input name="grad-year" id="grad-year" step="1" placeholder="Year"></smooth-placeholder-input>
+			<smooth-placeholder-input type="text" name="school-name" id="school-name" placeholder="School Name"></smooth-placeholder-input>
+			<button id="education-add" class="add-btn" type="button">+</button>
+			<div class="entry-list" id="education-list">
+			</div>
+		</section>
+		<section class="section">
+			<div class="center">
+				<button id="submit" class="submit-btn" type="button">Submit</button>
+			</div>
+		</section>
+	</form>
+	<button id='toggle-form' class="toggle-btn" type="button">Toggle Form</button>
+	<div id="resume">
+		<h1>Resume</h1>
+	</div>
+</body>
+</html>
