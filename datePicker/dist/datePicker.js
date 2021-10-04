@@ -423,8 +423,9 @@ var DatePicker = class extends HTMLElement {
             top: 1.35em;
             left: -.3em;
         `;
-    leftArrow.addEventListener("click", () => {
+    leftArrow.addEventListener("click", e => {
       this.calendar = this.renderTwoWeekCalendar(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 14));
+      e.stopPropagation();
     });
     leftArrow.addEventListener("mouseover", () => {
       leftArrow.style.background = this._accentColor;
@@ -458,8 +459,9 @@ var DatePicker = class extends HTMLElement {
             top: 1.35em;
             right: -.3em;
         `;
-    rightArrow.addEventListener("click", () => {
+    rightArrow.addEventListener("click", e => {
       this.calendar = this.renderTwoWeekCalendar(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 14));
+      e.stopPropagation();
     });
     rightArrow.addEventListener("mouseover", () => {
       rightArrow.style.background = this._accentColor;
@@ -580,15 +582,23 @@ var DatePicker = class extends HTMLElement {
   static get observedAttributes() {
     return ["selected-date"];
   }
+  hideCalendar(e) {
+    if (e.target === this.input) {
+      return;
+    }
+    this.calendarShown = false;
+  }
   set calendarShown(bool) {
     this._calendarShown = bool;
     this.setAttribute("calendar-shown", bool);
     this.button.style.opacity = bool ? 1 : 0.5;
     if (bool) {
       this.renderCalendar();
+      document.addEventListener("click", this.hideCalendar);
     } else {
       this.calendar && this.removeChild(this.calendar);
       this.calendar = null;
+      document.removeEventListener("click", this.hideCalendar);
     }
   }
   get calendarShown() {
