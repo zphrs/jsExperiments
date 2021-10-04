@@ -501,7 +501,7 @@ class DatePicker extends HTMLElement {
 
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === 'selected-date') {
-            this._selectedDate = new Date(newValue);
+            this.selectedDate = new Date(newValue);
         }
     }
 
