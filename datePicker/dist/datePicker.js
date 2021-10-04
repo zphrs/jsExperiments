@@ -161,6 +161,7 @@ var DatePicker = class extends HTMLElement {
     this._accentColor = accentColor != null ? accentColor : "black";
     this._backgroundColor = backgroundColor != null ? backgroundColor : "white";
     this.defaultDate = new Date(defaultDate);
+    this.attachShadow({mode: "open"});
     if (isNaN(this.defaultDate.valueOf())) {
       this.defaultDate = new Date();
     }
@@ -200,6 +201,7 @@ var DatePicker = class extends HTMLElement {
                 overflow: visible;
                 width: 100%;
                 top: 0;
+                color: ${this._accentColor};
             }
             smooth-placeholder-input::after {
                 content: "";
@@ -217,12 +219,18 @@ var DatePicker = class extends HTMLElement {
             smooth-placeholder-input.is-filled::after {
                 clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
             }
+            smooth-placeholder-input.focus::after {
+                background: ${this._accentColor};
+            }
+            smooth-placeholder-input.focus .smooth-placeholder-input-placeholder,
+            smooth-placeholder-input.is-filled .smooth-placeholder-input-placeholder {
+                opacity: .8;
+            }
             smooth-placeholder-input::before {
                 content: "";
                 position: absolute;
                 bottom: -5px;
-                left: .5%;
-                width: 99%;
+                width: 100%;
                 height: 5px;
                 background: ${this._backgroundColor};
                 transition: background-color 0.3s ease-out;
@@ -237,7 +245,7 @@ var DatePicker = class extends HTMLElement {
     let style = document.createElement("style");
     style.textContent = this.getStyleText();
     this.styleElem = style;
-    this.appendChild(style);
+    this.shadowRoot.appendChild(style);
   }
   createShowCalendarButton() {
     let button = document.createElement("button");
@@ -260,7 +268,7 @@ var DatePicker = class extends HTMLElement {
             cursor: pointer;
         `;
     button.firstChild.style.fill = "inherit";
-    this.appendChild(button);
+    this.shadowRoot.appendChild(button);
     this.button = button;
   }
   renderCalendar() {
@@ -299,7 +307,7 @@ var DatePicker = class extends HTMLElement {
     }
     let weeks = [nextTwoWeeks.slice(0, 7), nextTwoWeeks.slice(7, 14)];
     if (this.calendar) {
-      this.removeChild(this.calendar);
+      this.shadowRoot.removeChild(this.calendar);
     }
     let calendar = document.createElement("div");
     this.calendar = calendar;
@@ -423,7 +431,7 @@ var DatePicker = class extends HTMLElement {
             top: 1.35em;
             left: -.3em;
         `;
-    leftArrow.addEventListener("click", e => {
+    leftArrow.addEventListener("click", (e) => {
       this.calendar = this.renderTwoWeekCalendar(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 14));
       e.stopPropagation();
     });
@@ -459,7 +467,7 @@ var DatePicker = class extends HTMLElement {
             top: 1.35em;
             right: -.3em;
         `;
-    rightArrow.addEventListener("click", e => {
+    rightArrow.addEventListener("click", (e) => {
       this.calendar = this.renderTwoWeekCalendar(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 14));
       e.stopPropagation();
     });
@@ -517,7 +525,7 @@ var DatePicker = class extends HTMLElement {
     weeksDiv.appendChild(rightArrow);
     calendar.appendChild(daysRow);
     calendar.appendChild(weeksDiv);
-    this.appendChild(calendar);
+    this.shadowRoot.appendChild(calendar);
     return calendar;
   }
   createInput() {
@@ -559,7 +567,7 @@ var DatePicker = class extends HTMLElement {
         this.calendarShown = false;
     });
     this.input = input;
-    this.appendChild(input);
+    this.shadowRoot.appendChild(input);
   }
   set selectedDate(date) {
     this._selectedDate = date;
@@ -568,7 +576,7 @@ var DatePicker = class extends HTMLElement {
       return date2.toLocaleDateString("en-US", {weekday: "long", month: "long", day: "numeric", year: "numeric"});
     }
     if (!isNaN(date.valueOf())) {
-      this.input.value = date.toLocaleDateString();
+      this.input.value = getDateString(date);
       this.input.classList.remove("invalid");
     } else {
       this.input.value = "";
@@ -582,23 +590,15 @@ var DatePicker = class extends HTMLElement {
   static get observedAttributes() {
     return ["selected-date"];
   }
-  hideCalendar(e) {
-    if (e.target === this.input) {
-      return;
-    }
-    this.calendarShown = false;
-  }
   set calendarShown(bool) {
     this._calendarShown = bool;
     this.setAttribute("calendar-shown", bool);
-    this.button.style.opacity = bool ? 1 : 0.5;
+    this.button.style.opacity = bool ? 1 : 0.6;
     if (bool) {
       this.renderCalendar();
-      document.addEventListener("click", this.hideCalendar);
     } else {
-      this.calendar && this.removeChild(this.calendar);
+      this.calendar && this.shadowRoot.removeChild(this.calendar);
       this.calendar = null;
-      document.removeEventListener("click", this.hideCalendar);
     }
   }
   get calendarShown() {
@@ -609,5 +609,12 @@ var DatePicker = class extends HTMLElement {
       this._selectedDate = new Date(newValue);
     }
   }
+  get value() {
+    return this.selectedDate;
+  }
+  set value(date) {
+    this.selectedDate = date;
+  }
 };
 customElements.define("date-picker", DatePicker);
+//# sourceMappingURL=datePicker.js.map
