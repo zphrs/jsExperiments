@@ -158,6 +158,11 @@ var DatePicker = class extends HTMLElement {
       "Friday",
       "Saturday"
     ]);
+    __publicField(this, "hideCalendar", (e) => {
+      if (!this.contains(e.target)) {
+        this.calendarShown = false;
+      }
+    });
     this._accentColor = accentColor != null ? accentColor : "black";
     this._backgroundColor = backgroundColor != null ? backgroundColor : "white";
     this.defaultDate = new Date(defaultDate);
@@ -168,8 +173,6 @@ var DatePicker = class extends HTMLElement {
   }
   connectedCallback() {
     var _a, _b, _c, _d;
-    console.log(this.getAttribute("default-date"));
-    console.log(this.getAttribute("default-date"));
     this.hasAttribute("default-date") && (this.defaultDate = new Date(this.getAttribute("default-date")));
     if (isNaN(this.defaultDate.valueOf())) {
       this.defaultDate = new Date();
@@ -219,8 +222,11 @@ var DatePicker = class extends HTMLElement {
             smooth-placeholder-input.is-filled::after {
                 clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
             }
-            smooth-placeholder-input.focus::after {
+            smooth-placeholder-input.is-filled::before {
                 background: ${this._accentColor};
+            }
+            smooth-placeholder-input.focus::before {
+                background: ${this._backgroundColor};
             }
             smooth-placeholder-input.focus .smooth-placeholder-input-placeholder,
             smooth-placeholder-input.is-filled .smooth-placeholder-input-placeholder {
@@ -232,7 +238,7 @@ var DatePicker = class extends HTMLElement {
                 bottom: -5px;
                 width: 100%;
                 height: 5px;
-                background: ${this._backgroundColor};
+                background: ${this._accentColor};
                 transition: background-color 0.3s ease-out;
                 border-radius: 10px;
             }
@@ -255,12 +261,12 @@ var DatePicker = class extends HTMLElement {
     });
     button.style = `
             position: absolute;
-            right: 0;
-            top: 25%;
-            height: 50%;
-            background: transparent;
-            color: ${this._accentColor};
-            fill: ${this._accentColor};
+            right: .5em;
+            top: .5em;
+            height: 2em;
+            width: 2em;
+            fill: ${this._backgroundColor};
+            background: ${this._accentColor};
             border: none;
             padding: .25em;
             border-radius: 5px;
@@ -283,7 +289,6 @@ var DatePicker = class extends HTMLElement {
       return;
     }
     const selectedDate = customDate != null ? customDate : this.selectedDate;
-    console.log(customDate);
     const year = selectedDate.getFullYear();
     const month = selectedDate.getMonth();
     const day = selectedDate.getDate();
@@ -433,7 +438,6 @@ var DatePicker = class extends HTMLElement {
         `;
     leftArrow.addEventListener("click", (e) => {
       this.calendar = this.renderTwoWeekCalendar(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 14));
-      e.stopPropagation();
     });
     leftArrow.addEventListener("mouseover", () => {
       leftArrow.style.background = this._accentColor;
@@ -469,7 +473,6 @@ var DatePicker = class extends HTMLElement {
         `;
     rightArrow.addEventListener("click", (e) => {
       this.calendar = this.renderTwoWeekCalendar(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 14));
-      e.stopPropagation();
     });
     rightArrow.addEventListener("mouseover", () => {
       rightArrow.style.background = this._accentColor;
@@ -516,7 +519,6 @@ var DatePicker = class extends HTMLElement {
         }
       }
     }
-    console.log(monthWithMaxDays);
     monthAndYear.innerHTML = `
             ${months[monthWithMaxDays]} ${selectedDate.getFullYear()}
         `;
@@ -531,7 +533,6 @@ var DatePicker = class extends HTMLElement {
   createInput() {
     const input = new smoothPlaceholderInput_default();
     input.setAttribute("placeholder", "Date");
-    console.log(input);
     input.type = "text";
     input.addEventListener("change", (e) => {
       let date = new Date(e.target.value);
@@ -545,7 +546,6 @@ var DatePicker = class extends HTMLElement {
         this.selectedDate = this.defaultDate;
       }
       for (var i = 0; i < this.dayList.length; i++) {
-        console.log(this.dayList[i].toLowerCase(), inpStr.toLowerCase());
         if (inpWords.includes(this.dayList[i].toLowerCase())) {
           const date2 = new Date();
           let newDay = i - date2.getDay();
@@ -569,20 +569,28 @@ var DatePicker = class extends HTMLElement {
     this.input = input;
     this.shadowRoot.appendChild(input);
   }
-  set selectedDate(date) {
-    this._selectedDate = date;
-    this.setAttribute("selected-date", date);
+  onDateChange(date) {
     function getDateString(date2) {
       return date2.toLocaleDateString("en-US", {weekday: "long", month: "long", day: "numeric", year: "numeric"});
     }
     if (!isNaN(date.valueOf())) {
       this.input.value = getDateString(date);
       this.input.classList.remove("invalid");
+      this.button.style.background = "transparent";
+      this.button.style.fill = this._accentColor;
+      this.button.style.filter = `drop-shadow(0 0 0 ${this._backgroundColor})`;
     } else {
       this.input.value = "";
       this.input.classList.add("invalid");
+      this.button.style.background = this._accentColor;
+      this.button.style.fill = this._backgroundColor;
     }
     this.renderCalendar();
+  }
+  set selectedDate(date) {
+    this._selectedDate = date;
+    this.setAttribute("selected-date", date);
+    this.onDateChange(date);
   }
   get selectedDate() {
     return this._selectedDate;
@@ -593,12 +601,15 @@ var DatePicker = class extends HTMLElement {
   set calendarShown(bool) {
     this._calendarShown = bool;
     this.setAttribute("calendar-shown", bool);
-    this.button.style.opacity = bool ? 1 : 0.6;
     if (bool) {
       this.renderCalendar();
+      window.setTimeout(() => {
+        document.addEventListener("click", this.hideCalendar);
+      }, 0);
     } else {
       this.calendar && this.shadowRoot.removeChild(this.calendar);
       this.calendar = null;
+      document.removeEventListener("click", this.hideCalendar);
     }
   }
   get calendarShown() {
@@ -606,7 +617,8 @@ var DatePicker = class extends HTMLElement {
   }
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === "selected-date") {
-      this.selectedDate = new Date(newValue);
+      this._selectedDate = new Date(newValue);
+      this.onDateChange(this.selectedDate);
     }
   }
   get value() {
