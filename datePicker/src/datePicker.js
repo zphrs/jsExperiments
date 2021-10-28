@@ -68,7 +68,7 @@ var DatePicker = class extends HTMLElement {
                 left: 0;
                 width: 100%;
                 height: 5px;
-                background: ${this._accentColor};
+                background: ${this._backgroundColor};
                 border-radius: 5px;
                 transition: clip-path 0.3s ease-in-out;
                 clip-path: polygon(0 0, 100% 0, 100% 101%, 0% 100%);
@@ -78,10 +78,10 @@ var DatePicker = class extends HTMLElement {
                 clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
             }
             smooth-placeholder-input.is-filled::before {
-                background: ${this._accentColor};
+                background: ${this._backgroundColor};
             }
             smooth-placeholder-input.focus::before {
-                background: ${this._backgroundColor};
+                background: ${this._accentColor};
             }
             smooth-placeholder-input.focus .smooth-placeholder-input-placeholder,
             smooth-placeholder-input.is-filled .smooth-placeholder-input-placeholder {
@@ -150,8 +150,6 @@ var DatePicker = class extends HTMLElement {
     const dayOfWeek = selectedDate.getDay();
     const days = ["S", "M", "T", "W", "T", "F", "S"];
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
     let nextTwoWeeks = [];
     for (let j = dayOfWeek; j > 0; j--) {
       nextTwoWeeks.push({
@@ -248,9 +246,13 @@ var DatePicker = class extends HTMLElement {
           dayButton.style.color = this._accentColor;
         }
         dayButton.addEventListener("click", () => {
-          this.selectedDate = day2.dateObj;
-          this.renderCalendar();
-          this.calendarShown = false;
+          console.log("day pressed")
+          this.button.focus();
+          window.setTimeout(() => {
+            this.selectedDate = day2.dateObj;
+            this.renderCalendar();
+            this.calendarShown = false;
+          }, 0);
         });
         dayButton.addEventListener("mouseover", () => {
           dayButton.style.background = this._backgroundColor;
@@ -286,10 +288,12 @@ var DatePicker = class extends HTMLElement {
             cursor: pointer;
             border: none;
             transition-duration: .5s;
-            transition-property: background, color, filter;
+            transition-property: background, color, transform;
             position: absolute;
             top: 1.35em;
             left: -.3em;
+            transform: scale(1);
+            box-shadow: 0 0 .25em ${this._backgroundColor};
         `;
     leftArrow.addEventListener("click", (e) => {
       this.calendar = this.renderTwoWeekCalendar(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 14));
@@ -297,10 +301,10 @@ var DatePicker = class extends HTMLElement {
     leftArrow.addEventListener("mouseover", () => {
       leftArrow.style.background = this._accentColor;
       leftArrow.style.color = this._backgroundColor;
-      leftArrow.style.filter = `drop-shadow(0 0 .1em ${this._backgroundColor})`;
+      leftArrow.style.transform = `scale(1.1)`;
     });
     leftArrow.addEventListener("mouseout", () => {
-      leftArrow.style.filter = `drop-shadow(0 0 0 ${this._backgroundColor})`;
+      leftArrow.style.transform = `scale(1)`;
       leftArrow.style.background = this._backgroundColor;
       leftArrow.style.color = this._accentColor;
     });
@@ -321,10 +325,12 @@ var DatePicker = class extends HTMLElement {
             cursor: pointer;
             border: none;
             transition-duration: .5s;
-            transition-property: background, color, filter;
+            transition-property: background, color, transform;
             position: absolute;
             top: 1.35em;
             right: -.3em;
+            transform: scale(1);
+            box-shadow: 0 0 .25em ${this._backgroundColor};
         `;
     rightArrow.addEventListener("click", (e) => {
       this.calendar = this.renderTwoWeekCalendar(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 14));
@@ -332,10 +338,10 @@ var DatePicker = class extends HTMLElement {
     rightArrow.addEventListener("mouseover", () => {
       rightArrow.style.background = this._accentColor;
       rightArrow.style.color = this._backgroundColor;
-      rightArrow.style.filter = `drop-shadow(0 0 .1em ${this._backgroundColor})`;
+      rightArrow.style.transform = `scale(1.1)`;
     });
     rightArrow.addEventListener("mouseout", () => {
-      rightArrow.style.filter = `drop-shadow(0 0 0 ${this._backgroundColor})`;
+      rightArrow.style.transform = `scale(1)`;
       rightArrow.style.background = this._backgroundColor;
       rightArrow.style.color = this._accentColor;
     });
@@ -387,7 +393,7 @@ var DatePicker = class extends HTMLElement {
   }
   createInput() {
     const input = new smoothPlaceholderInput();
-    input.setAttribute("placeholder", "Date");
+    input.setAttribute("placeholder", this.getAttribute("placeholder")??"Date");
     input.type = "text";
     input.addEventListener("change", (e) => {
       let date = new Date(e.target.value);
