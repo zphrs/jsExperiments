@@ -1,4 +1,4 @@
-import smoothPlaceholderInput from './smoothPlaceholderInput';
+import smoothPlaceholderInput from './smoothPlaceholderInput.js';
 
 
 var DatePicker = class extends HTMLElement {
