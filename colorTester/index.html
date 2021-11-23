@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A site for trying out color palettes using the 60 - 30 - 10 rule">
+  <title>60 - 30 - 10 Tester</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js"></script>
+  <script src="share.js"></script>
+</head>
+<body>
+  <div class="ex-bar"></div>
+  <div class="root">
+    <div class="header">
+      <h2 class="main-subheader">
+        <span style="color: var(--primary-color); background-color: var(--secondary-color);">60</span>
+         - 
+        <span style="color: var(--secondary-color); background-color: var(--primary-color);">30</span>
+         - 
+        <span style="color: var(--accent-color); background: linear-gradient(to bottom right, var(--primary-color) 49%, var(--secondary-color) 51%)">10</span> 
+        <span id="tester">Tester</span>
+      </h2>
+      <h1>A site for trying out color palettes using the 60 - 30 - 10 rule</h1>
+    </div>
+    <div class="card-holder">
+      <div class="card">
+        <input type="color" id="primary">
+        <span>This is a card to select the <label for="primary">primary color</label>.</span>
+      </div>
+      <div class="card">
+        <input type="color" id="secondary">
+        <span>This is a second card to select the <label for="secondary"> secondary color</label>.</span>
+      </div>
+      <div class="card">
+        <input type="color" id="accent">
+        <span>Lastly, here's one more card to select the <label for="accent"> accent color</label>.</span>
+      </div>
+    </div>
+    <div>
+      <div class="todo-list">
+        <div class="todo">
+          Primary color - 60%
+          <p id="primary-color">#XXXXXX</p>
+          <p>
+            The primary color is typically used for the background color and occasionally for a text color for elements where the background color is the secondary color.
+          </p>
+        </div>
+        <div class="todo">
+          Secondary color - 30%
+          <p id="secondary-color">#XXXXXX</p>
+          <p>
+            The secondary color is typically used for the text color and occasionally for a background color to make certain elements like cards stick out more.
+        </div>
+        <div class="todo">
+          Accent color - 10%
+          <p id="accent-color">#XXXXXX</p>
+          <p>
+            The accent color is typically used for interactive elements like buttons and links. It can also be used for decorative elements like borders and gradients.
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+    <button id="share">Copy Share Link</button>
+  </div>
+</body>
+</html>

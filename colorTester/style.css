@@ -1,0 +1,254 @@
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap');
+
+html {
+  --primary-color: #040E28;
+  --secondary-color: #ccd7ff;
+  --accent-color: #7c60ff;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 15px;
+  box-sizing: border-box;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  font-family: "Atkinson Hyperlegible", sans-serif;
+}
+
+.main-subheader {
+  display: inline-block;
+  border: 2px solid var(--average-color);
+  border-radius: 5px;
+  padding: 5px;
+  color: var(--secondary-color);
+}
+.main-subheader span {
+  padding: 0em 0.25em;
+  font-weight: bold;
+}
+
+#tester { 
+  font-weight: 400;
+  color: var(--accent-color);
+}
+
+h2 {
+  font-weight: normal;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 400;
+}
+
+h1 {
+  margin-top: 0;
+}
+
+.ex-bar {
+  background: linear-gradient(
+    to right,
+    var(--primary-color) 60%,
+    var(--secondary-color) 60%,
+    var(--secondary-color) 90%,
+    var(--accent-color) 90%
+  );
+  width: 100vw;
+  height: 10px;
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0px;
+  border-bottom: 2px solid var(--average-color);
+}
+
+.ex-bar::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0px;
+  width: 10px;
+  height: 100vh;
+  border-left: 4px solid var(--average-color);
+  background: linear-gradient(
+    to top,
+    var(--primary-color) 60%,
+    var(--secondary-color) 60%,
+    var(--secondary-color) 90%,
+    var(--accent-color) 90%
+  );
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  justify-content: space-evenly;
+}
+
+h3 {
+  font-size: 1.5em;
+}
+
+.card-holder {
+  display: flex;
+  align-items: stretch;
+  overflow: auto;
+  width: 100%;
+  height: 30vh;
+  min-height: 125px;
+  /* snap scrolling */
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  margin: 0 auto;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  min-width: min(calc(100% - 1.5em - 10px), 300px);
+  box-sizing: border-box;
+  margin-right: 0.75em;
+  background-color: var(--secondary-color);
+  border-radius: 10px;
+  scroll-snap-align: center;
+  color: var(--primary-color);
+  padding: 1em;
+  font-size: 1.25em;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+.card::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(
+    var(--average-color) 30%,
+    var(--accent-color) 75%
+  );
+  border-radius: 50%;
+}
+
+input[type="color"] {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  box-sizing: border-box;
+  padding: 0;
+  height: 50px;
+  width: 50px;
+  clip-path: circle(12px at 50% 50%);
+}
+
+.card:last-child {
+  margin-right: 0.25em;
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-end;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 1em;
+  font-size: 1.2em;
+  margin-top: .25em;
+}
+
+h3 {
+  margin-bottom: 0;
+}
+
+.todo {
+  border-radius: 10px;
+  margin-bottom: 0.25em;
+  padding-left: 1em;
+  font-size: 1em;
+  box-sizing: border-box;
+  position: relative;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.todo p {
+  opacity: 0.8;
+  color: var(--secondary-color);
+  font-weight: normal;
+  font-size: 0.8em;
+  margin: 0;
+}
+
+.todo::before {
+  content: "";
+  display: block;
+  position: absolute;
+  /* align to the center of the todo div */
+  top: 50%;
+  left: -1em;
+  transform: translate(0, -50%);
+  width: 1em;
+  height: 1em;
+  background-color: var(--accent-color);
+  opacity: 0.75;
+  border-radius: 50%;
+}
+
+label {
+  display: inline;
+}
+
+.footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  padding: .25em .5em;
+  margin: 0;
+  width: fit-content;
+  display: inline-block;
+  background-color: var(--accent-color);
+  color: var(--secondary-color);
+  border-radius: .5em;
+  font: inherit;
+  font-weight: bold;
+  font-size: 2em;
+  margin: auto;
+  transition-property: border-radius;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+  box-shadow: 0 -.1em 0.2em var(--secondary-color);
+}
+
+button:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  border-radius: .25em;
+  box-shadow: 0 -.1em 0.3em var(--accent-color);
+}
+
+button:active {
+  background-color: var(--secondary-color);
+  color: var(--average-color);
+  border-radius: 0em;
+}
