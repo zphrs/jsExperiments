@@ -165,7 +165,7 @@ class PxHolder {
     });
   }
 
-  draw() {
+  bufferToOld() {
     const t = this;
     const positionBuffer = t.gl.createBuffer();
     const positionLoc = t.gl.getAttribLocation(t.program, "a_position");
@@ -193,11 +193,9 @@ class PxHolder {
     }
     t.gl.bufferData(t.gl.ARRAY_BUFFER, colorArray, t.gl.STATIC_DRAW);
     t.gl.vertexAttribPointer(colorLoc, 4, t.gl.UNSIGNED_BYTE, true, 0, 0);
-
-    t.gl.drawArrays(t.gl.POINTS, 0, t.array.length);
   }
 
-  drawToNew() {
+  bufferToNew() {
     const t = this;
     const positionBuffer = t.gl.createBuffer();
     const positionLoc = t.gl.getAttribLocation(t.program, "a_newPosition");
@@ -225,8 +223,6 @@ class PxHolder {
     }
     t.gl.bufferData(t.gl.ARRAY_BUFFER, colorArray, t.gl.STATIC_DRAW);
     t.gl.vertexAttribPointer(colorLoc, 4, t.gl.UNSIGNED_BYTE, true, 0, 0);
-
-    t.gl.drawArrays(t.gl.POINTS, 0, t.array.length);
   }
 }
 
@@ -277,15 +273,25 @@ function makeFragHolder(fragmentShader, width, height) {
     const float MAX_DIST = 2.0;
 
     void main() {
-      float sineTime = sin(u_time * 1.57079632679);
-      v_color = mix(a_color, a_newColor, sineTime);
+      v_color = mix(a_color, a_newColor, 2.0*max(0.0, u_time - 0.5));
       gl_PointSize = 1.0;
       gl_Position = vec4(
         mix(
           a_position, 
           a_newPosition, 
-          sineTime
-      ), 0, 1);
+          min(
+            u_time / min(
+              max(
+                length(
+                  a_newPosition - a_position
+                ) 
+                / MAX_DIST, 0.1
+              ), 2.0
+            ), 
+            1.0
+          )
+        ), 
+        0, 1);
     }
   `;
   const canvas = document.createElement("canvas");
@@ -311,13 +317,13 @@ async function transitionBetweenPxHolders(holders, time, totalTime) {
     
     const pxHolder1 = holders[index];
     const pxHolder2 = holders[index + 1];
-    pxHolder2.drawToNew();
+    pxHolder2.bufferToNew();
     const timeLoc = pxHolder2.gl.getUniformLocation(pxHolder2.program, "u_time");
     pxHolder2.gl.uniform1f(timeLoc, 0);
     // clear the screen
     pxHolder2.gl.clearColor(0, 0, 0, 0);
     pxHolder2.gl.clear(pxHolder2.gl.COLOR_BUFFER_BIT);
-    pxHolder1.draw();
+    pxHolder1.bufferToOld();
     console.log(pxHolder1.array.length, pxHolder2.array.length)
 
     let startTime = performance.now();
@@ -330,8 +336,8 @@ async function transitionBetweenPxHolders(holders, time, totalTime) {
         resolve();
       }
       pxHolder2.gl.uniform1f(timeLoc, timeDiff/1);
-      // pxHolder2.gl.clearColor(0, 0, 0, 0);
-      // pxHolder2.gl.clear(pxHolder2.gl.COLOR_BUFFER_BIT);
+      pxHolder2.gl.clearColor(0, 0, 0, 0);
+      pxHolder2.gl.clear(pxHolder2.gl.COLOR_BUFFER_BIT);
       pxHolder1.gl.drawArrays(pxHolder1.gl.POINTS, 0, pxHolder1.array.length);
       if (timeDiff < 1) {
         requestAnimationFrame(draw);
@@ -370,16 +376,16 @@ async function initWebgl(firstImg) {
   let out = function () {};
 
   out.resize = function () {
-    const newWidth = gl.canvas.parentElement.clientWidth;
-    const newHeight = gl.canvas.parentElement.clientHeight;
+    const boundingRect = gl.canvas.parentElement.getBoundingClientRect();
+    const newWidth = boundingRect.width;
+    const newHeight = boundingRect.height;
 
-    // gl.viewport(0, gl.canvas.height - currentImg.height, currentImg.width, currentImg.height);
-    // gl.clearColor(0, 0, 0, 0);
-    // gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
     gl.canvas.width = newWidth;
     gl.canvas.height = newHeight;
     gl.viewport(0, 0, newWidth, newHeight);
-    pxHolder.draw(gl, program);
+    gl.drawArrays(gl.POINTS, 0, pxHolder.array.length);
   };
 
   out.transitionImg = async function (img) {
