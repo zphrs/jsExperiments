@@ -7,4 +7,7 @@ body {
   height: 100%;
   margin: 0;
   background: black;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
