@@ -1,3 +1,4 @@
+import Stack from  "./Stack.js";
 
 
 async function loadImage(url) {
@@ -9,64 +10,19 @@ async function loadImage(url) {
     img.onerror = () => reject(new Error("Could not load image at " + url));
   });
 }
-// https://css-tricks.com/converting-color-spaces-in-javascript/
-function rgbToHsl(r,g,b) {
-  // Make r, g, and b fractions of 1
-  r /= 255;
-  g /= 255;
-  b /= 255;
-
-  // Find greatest and smallest channel values
-  let cmin = Math.min(r,g,b),
-      cmax = Math.max(r,g,b),
-      delta = cmax - cmin,
-      h = 0,
-      s = 0,
-      l = 0;
-
-  // Calculate hue
-  // No difference
-  if (delta == 0)
-    h = 0;
-  // Red is max
-  else if (cmax == r)
-    h = ((g - b) / delta) % 6;
-  // Green is max
-  else if (cmax == g)
-    h = (b - r) / delta + 2;
-  // Blue is max
-  else
-    h = (r - g) / delta + 4;
-
-  h = Math.round(h * 60);
-    
-  // Make negative hues positive behind 360°
-  if (h < 0)
-      h += 360;
-
-  // Calculate lightness
-  l = (cmax + cmin) / 2;
-
-  // Calculate saturation
-  s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
-    
-  // Multiply l and s by 100
-  s = +(s);
-  l = +(l);
-
-  return [h, s, l]
-}
 
 class Px {
   constructor(x, y, r, g, b, a) {
+    this.position = new Float32Array(2);
+    this.position[0] = x;
+    this.position[1] = y;
+
     this.color = new Uint8Array(4);
     this.color[0] = r;
     this.color[1] = g;
     this.color[2] = b;
     this.color[3] = a;
-    this.position = new Float32Array(2);
-    this.position[0] = x;
-    this.position[1] = y;
+
     this.brightness = (r + g + b) / 3;
   }
 
@@ -92,7 +48,7 @@ class Px {
   }
 
   copy() {
-    return new Px(this.position[0], this.position[1], this.color[0], this.color[1], this.color[2], this.color[3]);
+    return new Px(...this.position, ...this.color);
   }
 }
 
@@ -271,26 +227,29 @@ function makeFragHolder(fragmentShader, width, height) {
     uniform float u_time;
     uniform float u_scale;
     const float MAX_DIST = 2.0;
+    const float PI = 3.14159265358979323846264;
+
+    float cubicBezier(float t, float p0, float p1, float p2, float p3) {
+      return p0 * (1.0 - t) * (1.0 - t) * (1.0 - t) +
+              3.0 * p1 * t * (1.0 - t) * (1.0 - t) +
+              3.0 * p2 * t * t * (1.0 - t) +
+              p3 * t * t * t;
+    }
 
     void main() {
-      v_color = mix(a_color, a_newColor, 2.0*max(0.0, u_time - 0.5));
+      v_color = mix(a_color, a_newColor, u_time);
       gl_PointSize = 1.0;
       gl_Position = vec4(
         mix(
-          a_position, 
-          a_newPosition, 
-          min(
-            u_time / min(
-              max(
-                length(
-                  a_newPosition - a_position
-                ) 
-                / MAX_DIST, 0.1
-              ), 2.0
-            ), 
-            1.0
-          )
-        ), 
+          a_position.x, 
+          a_newPosition.x, 
+          cubicBezier(u_time, 0.0, 0.5, 1.0, 1.0)
+        ),
+        mix(
+          a_position.y,
+          a_newPosition.y,
+          cubicBezier(u_time, 0.0, 0.5, 1.0, 1.0)
+        ),
         0, 1);
     }
   `;
@@ -307,16 +266,12 @@ function makeFragHolder(fragmentShader, width, height) {
   return {gl, program};
 }
 
-async function transitionBetweenPxHolders(holders, time, totalTime) {
+async function transitionBetweenPxHolders(holder1, holder2, totalTime) {
   // figure out offset of holders array based on time
   const promise = new Promise((resolve, reject) => {
-    const timePerHolder = totalTime / (holders.length - 1);
-    const offset = time % timePerHolder;
-    const index = Math.floor(time / timePerHolder);
-    const t = offset / timePerHolder;
     
-    const pxHolder1 = holders[index];
-    const pxHolder2 = holders[index + 1];
+    const pxHolder1 = holder1;
+    const pxHolder2 = holder2;
     pxHolder2.bufferToNew();
     const timeLoc = pxHolder2.gl.getUniformLocation(pxHolder2.program, "u_time");
     pxHolder2.gl.uniform1f(timeLoc, 0);
@@ -324,18 +279,17 @@ async function transitionBetweenPxHolders(holders, time, totalTime) {
     pxHolder2.gl.clearColor(0, 0, 0, 0);
     pxHolder2.gl.clear(pxHolder2.gl.COLOR_BUFFER_BIT);
     pxHolder1.bufferToOld();
-    console.log(pxHolder1.array.length, pxHolder2.array.length)
 
     let startTime = performance.now();
 
     function draw(time) {
-      let timeDiff = (time - startTime) * 0.0005;
+      let timeDiff = (time - startTime) * 0.001;
       // console.log(timeDiff);
-      if (timeDiff > 1) {
-        timeDiff = 1;
+      if (timeDiff > totalTime) {
+        timeDiff = totalTime;
         resolve();
       }
-      pxHolder2.gl.uniform1f(timeLoc, timeDiff/1);
+      pxHolder2.gl.uniform1f(timeLoc, timeDiff/totalTime);
       pxHolder2.gl.clearColor(0, 0, 0, 0);
       pxHolder2.gl.clear(pxHolder2.gl.COLOR_BUFFER_BIT);
       pxHolder1.gl.drawArrays(pxHolder1.gl.POINTS, 0, pxHolder1.array.length);
@@ -345,6 +299,7 @@ async function transitionBetweenPxHolders(holders, time, totalTime) {
     }
     requestAnimationFrame(draw);
   });
+  return promise;
 }
 
 async function initWebgl(firstImg) {
@@ -388,8 +343,11 @@ async function initWebgl(firstImg) {
     gl.drawArrays(gl.POINTS, 0, pxHolder.array.length);
   };
 
-  out.transitionImg = async function (img) {
+  let imgQueue = [];
+
+  const transitionImg = async function (img) {
     const imgType = typeof img;
+    let origImg = img;
     switch (imgType) {
       case "string":
         img = await loadImage(img);
@@ -405,11 +363,8 @@ async function initWebgl(firstImg) {
       default:
         throw new Error("first argument must be a string or an image element");
     }
-    currentImg = img;
-    console.log("transitioning");
     const newPxHolder = new PxHolder(img, gl, program);
     const lengthDiff = pxHolder.array.length - newPxHolder.array.length;
-    console.log(lengthDiff);
     if (lengthDiff > 0) {
       // pad the new array with the old array
       for (let i = 0; i<lengthDiff; i++)
@@ -427,16 +382,28 @@ async function initWebgl(firstImg) {
       }
       pxHolder.resort();
     }
-    await transitionBetweenPxHolders([pxHolder, newPxHolder], 0, 1);
+    await transitionBetweenPxHolders(pxHolder, newPxHolder, 1);
     pxHolder = newPxHolder;
     if (lengthDiff > 0) {
       pxHolder.array = pxHolder.array.filter(px => !px.deleteMe);
     }
+    imgQueue.shift();
+    if (imgQueue.length > 0) {
+      transitionImg(imgQueue[0]);
+    }
   };
+
+  out.transitionImg = (img) => {
+    imgQueue.push(img);
+    if (imgQueue.length === 1) {
+      transitionImg(imgQueue[0]);
+    }
+  }
   return out;
 }
-let lastImageSeed = Math.round(Math.random() * 100000);
-let lastImageUrl = `https://picsum.photos/seed/${lastImageSeed}/${100*Math.floor(2+Math.random()*3)}/${100*Math.floor(2+Math.random()*3)}`;
+
+let lastImageUrl = `./photos/jpg/1.jpg`;
+let ind = 1;
 
 let timeout = null;
 let lastResize = performance.now();
@@ -455,7 +422,7 @@ function onResize(webgl) {
 }
 
 
-initWebgl(lastImageUrl).then(function (webgl) {
+initWebgl(lastImageUrl).then(async function (webgl) {
   window.addEventListener("resize", (e) => {
     onResize(webgl);
     window.requestAnimationFrame(webgl.resize);
@@ -467,10 +434,25 @@ initWebgl(lastImageUrl).then(function (webgl) {
   });
   resizeObserver.observe(document.body);
 
-  document.body.addEventListener('click', ()=>{
-    console.log('clicked');
-    lastImageSeed = Math.round(Math.random() * 100000);
-    lastImageUrl = lastImageUrl = `https://picsum.photos/seed/${lastImageSeed}/${100*Math.floor(2+Math.random()*3)}/${100*Math.floor(2+Math.random()*3)}`;
+  document.addEventListener('click', async ()=>{
+    lastImageUrl = await loadImage(`./photos/jpg/${++ind%57 + 1}.jpg`);
     webgl.transitionImg(lastImageUrl);
-  })
+    clicked = true;
+    clickedAt = performance.now();
+  });
+
+  let clicked = false;
+  let clickedAt = performance.now();
+
+  async function loop() {
+    while (!clicked) {
+      lastImageUrl = await loadImage(`./photos/jpg/${++ind%57+1}.jpg`);
+      webgl.transitionImg(lastImageUrl);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+    clicked = false;
+    await new Promise(resolve => setTimeout(resolve, 5000 - (performance.now() - clickedAt)));
+    loop();
+  }
+  loop();
 });
