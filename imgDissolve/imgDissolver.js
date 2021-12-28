@@ -437,22 +437,5 @@ initWebgl(lastImageUrl).then(async function (webgl) {
   document.addEventListener('click', async ()=>{
     lastImageUrl = await loadImage(`./photos/jpg/${++ind%56 + 1}.jpg`);
     webgl.transitionImg(lastImageUrl);
-    clicked = true;
-    clickedAt = performance.now();
   });
-
-  let clicked = false;
-  let clickedAt = performance.now();
-
-  async function loop() {
-    while (!clicked) {
-      lastImageUrl = await loadImage(`./photos/jpg/${++ind%56+1}.jpg`);
-      webgl.transitionImg(lastImageUrl);
-      await new Promise(resolve => setTimeout(resolve, 5000));
-    }
-    clicked = false;
-    await new Promise(resolve => setTimeout(resolve, 5000 - (performance.now() - clickedAt)));
-    loop();
-  }
-  loop();
 });
