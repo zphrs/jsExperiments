@@ -1,5 +1,10 @@
 import Stack from  "./Stack.js";
+import { Matrix4 } from "./math/Matrix4.js";
+import { Quaternion } from "./math/Quaternion.js";
+import { Euler } from "./math/Euler.js";
+import { Vector3 } from "./math/Vector3.js";
 
+import m4 from "./m4.js";
 
 async function loadImage(url) {
   const img = new Image();
@@ -126,6 +131,7 @@ class PxHolder {
     const positionBuffer = t.gl.createBuffer();
     const positionLoc = t.gl.getAttribLocation(t.program, "a_position");
     t.gl.enableVertexAttribArray(positionLoc);
+    t.gl.enable(t.gl.DEPTH_TEST);
 
     t.gl.bindBuffer(t.gl.ARRAY_BUFFER, positionBuffer);
     const positionArray = new Float32Array(t.array.length * 2);
@@ -218,7 +224,7 @@ function createProgram(gl, vertexShader, fragmentShader) {
  * `gl.texImage2D()`.
  */
 function makeFragHolder(fragmentShader, width, height) {
-  const vs = `
+  const vs = /* glsl */ `
     attribute vec4 a_color;
     varying vec4 v_color;
     attribute vec4 a_newColor;
@@ -226,6 +232,7 @@ function makeFragHolder(fragmentShader, width, height) {
     attribute vec2 a_newPosition;
     uniform float u_time;
     uniform float u_scale;
+    uniform mat4 u_matrix;
     const float MAX_DIST = 2.0;
     const float PI = 3.14159265358979323846264;
 
@@ -238,19 +245,9 @@ function makeFragHolder(fragmentShader, width, height) {
 
     void main() {
       v_color = mix(a_color, a_newColor, u_time);
+      vec4 v_transformedColor = u_matrix * ((v_color - vec4(0.5, 0.5, 0.5, 0.0)) * 2.0);
+      gl_Position = v_transformedColor;
       gl_PointSize = 1.0;
-      gl_Position = vec4(
-        mix(
-          a_position.x, 
-          a_newPosition.x, 
-          cubicBezier(u_time, 0.0, 0.5, 1.0, 1.0)
-        ),
-        mix(
-          a_position.y,
-          a_newPosition.y,
-          cubicBezier(u_time, 0.0, 0.5, 1.0, 1.0)
-        ),
-        0, 1);
     }
   `;
   const canvas = document.createElement("canvas");
@@ -265,7 +262,6 @@ function makeFragHolder(fragmentShader, width, height) {
 
   return {gl, program};
 }
-
 async function transitionBetweenPxHolders(holder1, holder2, totalTime) {
   // figure out offset of holders array based on time
   const promise = new Promise((resolve, reject) => {
@@ -274,10 +270,15 @@ async function transitionBetweenPxHolders(holder1, holder2, totalTime) {
     const pxHolder2 = holder2;
     pxHolder2.bufferToNew();
     const timeLoc = pxHolder2.gl.getUniformLocation(pxHolder2.program, "u_time");
+    const matLoc = pxHolder2.gl.getUniformLocation(pxHolder2.program, "u_matrix");
+    // add pointer move event listener to canvas
+    const canvas = pxHolder2.gl.canvas;
+    let mouseDown = true;
     pxHolder2.gl.uniform1f(timeLoc, 0);
     // clear the screen
     pxHolder2.gl.clearColor(0, 0, 0, 0);
     pxHolder2.gl.clear(pxHolder2.gl.COLOR_BUFFER_BIT);
+    pxHolder2.gl.clearDepth(-10);
     pxHolder1.bufferToOld();
 
     let startTime = performance.now();
@@ -292,12 +293,26 @@ async function transitionBetweenPxHolders(holder1, holder2, totalTime) {
       pxHolder2.gl.uniform1f(timeLoc, timeDiff/totalTime);
       pxHolder2.gl.clearColor(0, 0, 0, 0);
       pxHolder2.gl.clear(pxHolder2.gl.COLOR_BUFFER_BIT);
+      pxHolder2.gl.clearDepth(-10);
       pxHolder1.gl.drawArrays(pxHolder1.gl.POINTS, 0, pxHolder1.array.length);
       if (timeDiff < 1) {
         requestAnimationFrame(draw);
       }
     }
     requestAnimationFrame(draw);
+
+    window.addEventListener("pointermove", e=> {
+      if (mouseDown) {
+        const x = e.clientX;
+        const y = e.clientY;
+        const xPercent = x / canvas.width;
+        const yPercent = y / canvas.height;
+        let matrix = m4.translation(0, 0, 0);
+        matrix = m4.rotate(matrix, yPercent * Math.PI * 2, xPercent * Math.PI * 2, 0);
+        pxHolder2.gl.uniformMatrix4fv(matLoc, false, m4.inverse(matrix));
+        draw(1);
+      }
+    })
   });
   return promise;
 }
@@ -337,6 +352,7 @@ async function initWebgl(firstImg) {
 
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clearDepth(-10);
     gl.canvas.width = newWidth;
     gl.canvas.height = newHeight;
     gl.viewport(0, 0, newWidth, newHeight);
