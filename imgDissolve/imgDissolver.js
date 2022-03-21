@@ -129,8 +129,8 @@ class PxHolder {
   bufferToOld() {
     const t = this;
     const positionBuffer = t.gl.createBuffer();
-    const positionLoc = t.gl.getAttribLocation(t.program, "a_position");
-    t.gl.enableVertexAttribArray(positionLoc);
+    // const positionLoc = t.gl.getAttribLocation(t.program, "a_position");
+    // t.gl.enableVertexAttribArray(positionLoc);
     t.gl.enable(t.gl.DEPTH_TEST);
 
     t.gl.bindBuffer(t.gl.ARRAY_BUFFER, positionBuffer);
@@ -140,7 +140,7 @@ class PxHolder {
       positionArray[i * 2 + 1] = t.array[i].position[1];
     }
     t.gl.bufferData(t.gl.ARRAY_BUFFER, positionArray, t.gl.STATIC_DRAW);
-    t.gl.vertexAttribPointer(positionLoc, 2, t.gl.FLOAT, false, 0, 0);
+    // t.gl.vertexAttribPointer(positionLoc, 2, t.gl.FLOAT, false, 0, 0);
     
     const colorBuffer = t.gl.createBuffer();
     const colorLoc = t.gl.getAttribLocation(t.program, "a_color");
@@ -160,8 +160,8 @@ class PxHolder {
   bufferToNew() {
     const t = this;
     const positionBuffer = t.gl.createBuffer();
-    const positionLoc = t.gl.getAttribLocation(t.program, "a_newPosition");
-    t.gl.enableVertexAttribArray(positionLoc);
+    // const positionLoc = t.gl.getAttribLocation(t.program, "a_newPosition");
+    // t.gl.enableVertexAttribArray(positionLoc);
 
     t.gl.bindBuffer(t.gl.ARRAY_BUFFER, positionBuffer);
     const positionArray = new Float32Array(t.array.length * 2);
@@ -170,7 +170,6 @@ class PxHolder {
       positionArray[i * 2 + 1] = t.array[i].position[1];
     }
     t.gl.bufferData(t.gl.ARRAY_BUFFER, positionArray, t.gl.STATIC_DRAW);
-    t.gl.vertexAttribPointer(positionLoc, 2, t.gl.FLOAT, false, 0, 0);
     
     const colorBuffer = t.gl.createBuffer();
     const colorLoc = t.gl.getAttribLocation(t.program, "a_newColor");
@@ -228,8 +227,6 @@ function makeFragHolder(fragmentShader, width, height) {
     attribute vec4 a_color;
     varying vec4 v_color;
     attribute vec4 a_newColor;
-    attribute vec2 a_position;
-    attribute vec2 a_newPosition;
     uniform float u_time;
     uniform float u_scale;
     uniform mat4 u_matrix;
@@ -245,7 +242,7 @@ function makeFragHolder(fragmentShader, width, height) {
 
     void main() {
       v_color = mix(a_color, a_newColor, u_time);
-      vec4 v_transformedColor = u_matrix * ((v_color - vec4(0.5, 0.5, 0.5, 0.0)) * 2.0);
+      vec4 v_transformedColor = u_matrix * (v_color * 2.0 - vec4(1.0, 1.0, 1.0, 0.0));
       gl_Position = v_transformedColor;
       gl_PointSize = 1.0;
     }
@@ -275,10 +272,7 @@ async function transitionBetweenPxHolders(holder1, holder2, totalTime) {
     const canvas = pxHolder2.gl.canvas;
     let mouseDown = true;
     pxHolder2.gl.uniform1f(timeLoc, 0);
-    // clear the screen
-    pxHolder2.gl.clearColor(0, 0, 0, 0);
-    pxHolder2.gl.clear(pxHolder2.gl.COLOR_BUFFER_BIT);
-    pxHolder2.gl.clearDepth(-10);
+    pxHolder2.gl.enable(pxHolder2.gl.DEPTH_TEST);
     pxHolder1.bufferToOld();
 
     let startTime = performance.now();
@@ -292,12 +286,13 @@ async function transitionBetweenPxHolders(holder1, holder2, totalTime) {
       }
       pxHolder2.gl.uniform1f(timeLoc, timeDiff/totalTime);
       pxHolder2.gl.clearColor(0, 0, 0, 0);
-      pxHolder2.gl.clear(pxHolder2.gl.COLOR_BUFFER_BIT);
-      pxHolder2.gl.clearDepth(-10);
+      pxHolder2.gl.clear(pxHolder2.gl.COLOR_BUFFER_BIT | pxHolder2.gl.DEPTH_BUFFER_BIT);
       pxHolder1.gl.drawArrays(pxHolder1.gl.POINTS, 0, pxHolder1.array.length);
       if (timeDiff < 1) {
         requestAnimationFrame(draw);
       }
+
+      pxHolder1.gl
     }
     requestAnimationFrame(draw);
 
@@ -307,8 +302,10 @@ async function transitionBetweenPxHolders(holder1, holder2, totalTime) {
         const y = e.clientY;
         const xPercent = x / canvas.width;
         const yPercent = y / canvas.height;
-        let matrix = m4.translation(0, 0, 0);
-        matrix = m4.rotate(matrix, yPercent * Math.PI * 2, xPercent * Math.PI * 2, 0);
+        let matrix = m4.translation(0, 0, 0, 10);
+        // matrix = m4.rotate(matrix, yPercent * Math.PI * 2, xPercent * Math.PI * 2, 0);
+        matrix = m4.xRotate(matrix, yPercent * Math.PI * 2);
+        matrix = m4.yRotate(matrix, xPercent * Math.PI * 2);
         pxHolder2.gl.uniformMatrix4fv(matLoc, false, m4.inverse(matrix));
         draw(1);
       }
@@ -351,8 +348,7 @@ async function initWebgl(firstImg) {
     const newHeight = boundingRect.height;
 
     gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.clearDepth(-10);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.canvas.width = newWidth;
     gl.canvas.height = newHeight;
     gl.viewport(0, 0, newWidth, newHeight);
